@@ -6,6 +6,7 @@ import { env } from '@/lib/env';
 import type { Database } from '@/lib/supabase/types';
 
 type TypedClient = SupabaseClient<Database>;
+type CookieStore = Awaited<ReturnType<typeof cookies>>;
 
 const secureCookie = (env.NEXT_PUBLIC_APP_ENV === 'production');
 
@@ -26,12 +27,12 @@ export function createServerClient(): TypedClient {
         flowType: 'pkce',
       },
       cookies: {
-        getAll() {
-          const store = cookies();
+        async getAll() {
+          const store = await cookies();
           return store.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        setAll(cookiesToSet: { name: string; value: string; options?: { domain?: string; path?: string; sameSite?: boolean | 'lax' | 'strict' | 'none'; secure?: boolean; httpOnly?: boolean; maxAge?: number; expires?: Date } }[]) {
-          const store = cookies();
+        async setAll(cookiesToSet: { name: string; value: string; options?: Parameters<CookieStore['set']>[0] }[]) {
+          const store = await cookies();
           cookiesToSet.forEach(({ name, value, options }) => {
             store.set({
               name,
