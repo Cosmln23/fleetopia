@@ -31,7 +31,7 @@ export function createServerClient(): TypedClient {
           const store = await cookies();
           return store.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        async setAll(cookiesToSet: { name: string; value: string; options?: Parameters<CookieStore['set']>[0] }[]) {
+        async setAll(cookiesToSet: { name: string; value: string; options?: any }[]) {
           const store = await cookies();
           cookiesToSet.forEach(({ name, value, options }) => {
             store.set({
@@ -79,7 +79,7 @@ export function createMiddlewareClient(req: NextRequest, res: NextResponse): Typ
         getAll() {
           return req.cookies.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        setAll(cookiesToSet: { name: string; value: string; options?: { domain?: string; path?: string; sameSite?: boolean | 'lax' | 'strict' | 'none'; secure?: boolean; httpOnly?: boolean; maxAge?: number; expires?: Date } }[]) {
+        setAll(cookiesToSet: { name: string; value: string; options?: any }[]) {
           cookiesToSet.forEach(({ name, value, options }) => {
             res.cookies.set({
               name,
