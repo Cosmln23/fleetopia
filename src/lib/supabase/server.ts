@@ -30,7 +30,7 @@ export function createServerClient(): TypedClient {
           const store = cookies();
           return store.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        setAll(cookiesToSet: { name: string; value: string; options?: { domain?: string; path?: string; sameSite?: 'lax' | 'strict' | 'none'; secure?: boolean; httpOnly?: boolean; maxAge?: number; expires?: Date } }[]) {
+        setAll(cookiesToSet: { name: string; value: string; options?: { domain?: string; path?: string; sameSite?: boolean | 'lax' | 'strict' | 'none'; secure?: boolean; httpOnly?: boolean; maxAge?: number; expires?: Date } }[]) {
           const store = cookies();
           cookiesToSet.forEach(({ name, value, options }) => {
             store.set({
@@ -78,7 +78,7 @@ export function createMiddlewareClient(req: NextRequest, res: NextResponse): Typ
         getAll() {
           return req.cookies.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        setAll(cookiesToSet: { name: string; value: string; options?: { domain?: string; path?: string; sameSite?: 'lax' | 'strict' | 'none'; secure?: boolean; httpOnly?: boolean; maxAge?: number; expires?: Date } }[]) {
+        setAll(cookiesToSet: { name: string; value: string; options?: { domain?: string; path?: string; sameSite?: boolean | 'lax' | 'strict' | 'none'; secure?: boolean; httpOnly?: boolean; maxAge?: number; expires?: Date } }[]) {
           cookiesToSet.forEach(({ name, value, options }) => {
             res.cookies.set({
               name,
