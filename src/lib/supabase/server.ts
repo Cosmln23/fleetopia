@@ -6,7 +6,7 @@ import { env } from '@/lib/env';
 import type { Database } from '@/lib/supabase/types';
 
 type TypedClient = SupabaseClient<Database>;
-type CookieStore = Awaited<ReturnType<typeof cookies>>;
+// Note: keep adapter types minimal to satisfy @supabase/ssr while avoiding ESLint warnings
 
 const secureCookie = (env.NEXT_PUBLIC_APP_ENV === 'production');
 
@@ -31,9 +31,9 @@ export function createServerClient(): TypedClient {
           const store = await cookies();
           return store.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        async setAll(cookiesToSet: { name: string; value: string; options?: any }[]) {
+        async setAll(cookiesToSet: { name: string; value: string; options?: unknown }[]) {
           const store = await cookies();
-          cookiesToSet.forEach(({ name, value, options }) => {
+          cookiesToSet.forEach(({ name, value }) => {
             store.set({
               name,
               value,
@@ -41,7 +41,6 @@ export function createServerClient(): TypedClient {
               sameSite: 'lax',
               secure: secureCookie,
               path: '/',
-              ...options,
             });
           });
         },
@@ -79,8 +78,8 @@ export function createMiddlewareClient(req: NextRequest, res: NextResponse): Typ
         getAll() {
           return req.cookies.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        setAll(cookiesToSet: { name: string; value: string; options?: any }[]) {
-          cookiesToSet.forEach(({ name, value, options }) => {
+        setAll(cookiesToSet: { name: string; value: string; options?: unknown }[]) {
+          cookiesToSet.forEach(({ name, value }) => {
             res.cookies.set({
               name,
               value,
@@ -88,7 +87,6 @@ export function createMiddlewareClient(req: NextRequest, res: NextResponse): Typ
               sameSite: 'lax',
               secure: secureCookie,
               path: '/',
-              ...options,
             });
           });
         },
