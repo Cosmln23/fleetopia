@@ -35,6 +35,7 @@ export type Database = {
           subscription_status?: Database['public']['Enums']['subscription_status'];
           updated_at?: string;
         };
+        Relationships: [];
       };
       loads: {
         Row: {
@@ -77,6 +78,7 @@ export type Database = {
           status?: Database['public']['Enums']['load_status'];
           updated_at?: string;
         };
+        Relationships: [];
       };
       bids: {
         Row: {
@@ -105,6 +107,7 @@ export type Database = {
           status?: Database['public']['Enums']['bid_status'];
           updated_at?: string;
         };
+        Relationships: [];
       };
       deals: {
         Row: {
@@ -133,6 +136,7 @@ export type Database = {
           currency?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       chat_messages: {
         Row: {
@@ -152,6 +156,7 @@ export type Database = {
         Update: {
           message?: string;
         };
+        Relationships: [];
       };
       geocoding_cache: {
         Row: {
@@ -178,10 +183,12 @@ export type Database = {
           lng?: number | null;
           geo?: object | null;
         };
+        Relationships: [];
       };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
+    CompositeTypes: Record<string, never>;
     Enums: {
       user_role: 'admin' | 'shipper' | 'carrier';
       load_status: 'posted' | 'accepted' | 'in_transit' | 'delivered' | 'canceled';
