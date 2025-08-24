@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { BottomNav, FooterSection, SettingsSidebar, ProfileGeneralSection, CompanyVerificationSection, OperationalAISection, SubscriptionBillingSection, PreferencesSecuritySection, TopNavbar } from "@/shared/ui";
+import { FooterSection, SettingsSidebar, ProfileGeneralSection, CompanyVerificationSection, OperationalAISection, SubscriptionBillingSection, PreferencesSecuritySection } from "@/shared/ui";
 
 type SettingsKey = Parameters<typeof SettingsSidebar>[0]["active"];
 
@@ -20,8 +20,6 @@ export default function SettingsPage() {
 
   return (
     <div className="antialiased text-gray-100 bg-black pb-20">
-      <TopNavbar />
-      <BottomNav />
       <section className="min-h-screen bg-[url(https://images.unsplash.com/photo-1659115516377-25ed306a3551?w=2560&q=80)] bg-cover pt-20 pb-20">
         <div className="max-w-7xl mr-auto ml-auto pt-8 pr-6 pb-8 pl-6">
           <div className="mb-8">
