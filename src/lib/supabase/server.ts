@@ -15,7 +15,6 @@ const secureCookie = (env.NEXT_PUBLIC_APP_ENV === 'production');
  * - Uses Next.js App Router cookies() API to manage auth session.
  */
 export function createServerClient(): TypedClient {
-  const cookieStore = cookies();
   const client = createSSRClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
@@ -27,12 +26,14 @@ export function createServerClient(): TypedClient {
         flowType: 'pkce',
       },
       cookies: {
-        getAll() {
-          return cookieStore.getAll().map((c) => ({ name: c.name, value: c.value }));
+        async getAll() {
+          const store = await cookies();
+          return store.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        setAll(cookiesToSet: { name: string; value: string; options?: Parameters<typeof cookieStore.set>[0] }[]) {
+        async setAll(cookiesToSet: { name: string; value: string; options?: Parameters<ReturnType<typeof cookies>['set']>[0] }[]) {
+          const store = await cookies();
           cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set({
+            store.set({
               name,
               value,
               httpOnly: true,
@@ -74,10 +75,10 @@ export function createMiddlewareClient(req: NextRequest, res: NextResponse): Typ
         flowType: 'pkce',
       },
       cookies: {
-        getAll() {
+        async getAll() {
           return req.cookies.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        setAll(cookiesToSet: { name: string; value: string; options?: Parameters<typeof res.cookies.set>[0] }[]) {
+        async setAll(cookiesToSet: { name: string; value: string; options?: Parameters<typeof res.cookies.set>[0] }[]) {
           cookiesToSet.forEach(({ name, value, options }) => {
             res.cookies.set({
               name,
