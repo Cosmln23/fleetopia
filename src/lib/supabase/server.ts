@@ -26,12 +26,12 @@ export function createServerClient(): TypedClient {
         flowType: 'pkce',
       },
       cookies: {
-        async getAll() {
-          const store = await cookies();
+        getAll() {
+          const store = cookies();
           return store.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        async setAll(cookiesToSet: { name: string; value: string; options?: Parameters<ReturnType<typeof cookies>['set']>[0] }[]) {
-          const store = await cookies();
+        setAll(cookiesToSet: { name: string; value: string; options?: { domain?: string; path?: string; sameSite?: 'lax' | 'strict' | 'none'; secure?: boolean; httpOnly?: boolean; maxAge?: number; expires?: Date } }[]) {
+          const store = cookies();
           cookiesToSet.forEach(({ name, value, options }) => {
             store.set({
               name,
@@ -75,10 +75,10 @@ export function createMiddlewareClient(req: NextRequest, res: NextResponse): Typ
         flowType: 'pkce',
       },
       cookies: {
-        async getAll() {
+        getAll() {
           return req.cookies.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        async setAll(cookiesToSet: { name: string; value: string; options?: Parameters<typeof res.cookies.set>[0] }[]) {
+        setAll(cookiesToSet: { name: string; value: string; options?: { domain?: string; path?: string; sameSite?: 'lax' | 'strict' | 'none'; secure?: boolean; httpOnly?: boolean; maxAge?: number; expires?: Date } }[]) {
           cookiesToSet.forEach(({ name, value, options }) => {
             res.cookies.set({
               name,
