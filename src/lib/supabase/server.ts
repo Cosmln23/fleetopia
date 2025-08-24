@@ -30,7 +30,7 @@ export function createServerClient(): TypedClient {
         getAll() {
           return cookieStore.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: { name: string; value: string; options?: Parameters<typeof cookieStore.set>[0] }[]) {
           cookiesToSet.forEach(({ name, value, options }) => {
             cookieStore.set({
               name,
@@ -77,7 +77,7 @@ export function createMiddlewareClient(req: NextRequest, res: NextResponse): Typ
         getAll() {
           return req.cookies.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: { name: string; value: string; options?: Parameters<typeof res.cookies.set>[0] }[]) {
           cookiesToSet.forEach(({ name, value, options }) => {
             res.cookies.set({
               name,

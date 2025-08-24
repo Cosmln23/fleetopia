@@ -180,8 +180,8 @@ export type Database = {
         };
       };
     };
-    Views: {};
-    Functions: {};
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
     Enums: {
       user_role: 'admin' | 'shipper' | 'carrier';
       load_status: 'posted' | 'accepted' | 'in_transit' | 'delivered' | 'canceled';
