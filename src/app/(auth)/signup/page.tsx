@@ -52,7 +52,7 @@ export default function SignupPage() {
     );
   }
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     const emailEntry = form.get('email');
@@ -87,27 +87,29 @@ export default function SignupPage() {
       return;
     }
 
-    try {
-      const supabase = createBrowserClient();
-      const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin);
-      const emailRedirectTo = `${baseUrl}/auth/callback`;
-      const { error } = await supabase.auth.signUp({
-        email: parsed.data.email,
-        password: parsed.data.password,
-        options: {
-          emailRedirectTo,
-          data: { user_type: parsed.data.userType },
-        },
-      });
-      if (error) {
-        setState({ formError: error.message });
-        return;
+    void (async () => {
+      try {
+        const supabase = createBrowserClient();
+        const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin);
+        const emailRedirectTo = `${baseUrl}/auth/callback`;
+        const { error } = await supabase.auth.signUp({
+          email: parsed.data.email,
+          password: parsed.data.password,
+          options: {
+            emailRedirectTo,
+            data: { user_type: parsed.data.userType },
+          },
+        });
+        if (error) {
+          setState({ formError: error.message });
+          return;
+        }
+        setState({ success: true });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Unexpected error.';
+        setState({ formError: message });
       }
-      setState({ success: true });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unexpected error.';
-      setState({ formError: message });
-    }
+    })();
   }
 
   return (
