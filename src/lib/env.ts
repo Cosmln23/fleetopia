@@ -45,7 +45,7 @@ function getServerEnv(): ServerEnv {
     const issues = result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('\n');
     throw new Error(`Invalid environment configuration:\n${issues}`);
   }
-  return result.data as ServerEnv;
+  return result.data;
 }
 
 export function getEnv(): ClientEnv | ServerEnv {
