@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createMiddlewareClient } from '@/lib/supabase/server';
 
-const PUBLIC_ROUTES = new Set<string>(['/', '/login', '/signup']);
+const PUBLIC_ROUTES = new Set<string>(['/', '/login', '/signup', '/auth/callback']);
 const AUTH_ROUTES = new Set<string>(['/login', '/signup']);
 
 function isProtectedRoute(pathname: string): boolean {
@@ -66,5 +66,6 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:png|jpg|jpeg|svg|gif|ico|webp|avif|css|js|map)$).*)',
   ],
 };
+
 
 

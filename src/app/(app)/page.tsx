@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import { TopNavbar, BottomNav, HeroSection, QuickActionsSection, HowItWorksSection, TestimonialsSection, FooterSection } from "../shared/ui";
+import { HeroSection, QuickActionsSection, HowItWorksSection, TestimonialsSection, FooterSection } from "../../shared/ui";
 
 export default function Home() {
   useEffect(() => {
@@ -18,8 +18,7 @@ export default function Home() {
 
   return (
     <div className="antialiased text-gray-100 bg-black pb-20">
-      <TopNavbar />
-      <BottomNav />
+      {/* TopNavbar & BottomNav vin din (app)/layout */}
       <HeroSection />
       <QuickActionsSection />
       <HowItWorksSection />
@@ -28,3 +27,5 @@ export default function Home() {
     </div>
   );
 }
+
+
