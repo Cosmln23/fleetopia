@@ -6,6 +6,7 @@ import { env } from '@/lib/env';
 import type { Database } from '@/lib/supabase/types';
 
 type TypedClient = SupabaseClient<Database>;
+// Note: keep adapter types minimal to satisfy @supabase/ssr while avoiding ESLint warnings
 
 const secureCookie = (env.NEXT_PUBLIC_APP_ENV === 'production');
 
@@ -15,7 +16,6 @@ const secureCookie = (env.NEXT_PUBLIC_APP_ENV === 'production');
  * - Uses Next.js App Router cookies() API to manage auth session.
  */
 export function createServerClient(): TypedClient {
-  const cookieStore = cookies();
   const client = createSSRClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
@@ -27,19 +27,26 @@ export function createServerClient(): TypedClient {
         flowType: 'pkce',
       },
       cookies: {
-        getAll() {
-          return cookieStore.getAll().map((c) => ({ name: c.name, value: c.value }));
+        async getAll() {
+          const store = await cookies();
+          return store.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        setAll(cookiesToSet) {
+        async setAll(cookiesToSet: { name: string; value: string; options?: { maxAge?: number; expires?: Date } }[]) {
+          const store = await cookies();
+          const remember = store.get('ft_remember_me')?.value === '1';
           cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set({
+            const incoming = options ?? {};
+            const finalMaxAge = typeof incoming.maxAge !== 'undefined' ? incoming.maxAge : (remember ? 60 * 60 * 24 * 30 : undefined);
+            store.set({
               name,
               value,
               httpOnly: true,
               sameSite: 'lax',
               secure: secureCookie,
               path: '/',
-              ...options,
+              // preserve explicit expires if provided, else use maxAge
+              ...(incoming.expires ? { expires: incoming.expires } : {}),
+              ...(typeof finalMaxAge !== 'undefined' ? { maxAge: finalMaxAge } : {}),
             });
           });
         },
@@ -77,8 +84,11 @@ export function createMiddlewareClient(req: NextRequest, res: NextResponse): Typ
         getAll() {
           return req.cookies.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: { name: string; value: string; options?: { maxAge?: number; expires?: Date } }[]) {
+          const remember = req.cookies.get('ft_remember_me')?.value === '1';
           cookiesToSet.forEach(({ name, value, options }) => {
+            const incoming = options ?? {};
+            const finalMaxAge = typeof incoming.maxAge !== 'undefined' ? incoming.maxAge : (remember ? 60 * 60 * 24 * 30 : undefined);
             res.cookies.set({
               name,
               value,
@@ -86,7 +96,8 @@ export function createMiddlewareClient(req: NextRequest, res: NextResponse): Typ
               sameSite: 'lax',
               secure: secureCookie,
               path: '/',
-              ...options,
+              ...(incoming.expires ? { expires: incoming.expires } : {}),
+              ...(typeof finalMaxAge !== 'undefined' ? { maxAge: finalMaxAge } : {}),
             });
           });
         },

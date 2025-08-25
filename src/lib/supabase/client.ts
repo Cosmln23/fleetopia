@@ -39,8 +39,10 @@ export function createBrowserClient(): SupabaseClient<Database> {
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
-        // Explicit storage for browsers; guarded to avoid SSR access
-        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+        // Use localStorage for remember-me, else sessionStorage
+        storage: typeof window !== 'undefined'
+          ? (document.cookie.includes('ft_remember_me=1') ? window.localStorage : window.sessionStorage)
+          : undefined,
       },
       realtime: {
         // Slightly throttle event rate to avoid UI jank in heavy channels

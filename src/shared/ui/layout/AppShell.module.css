@@ -7,6 +7,8 @@
 
 .main {
 	flex: 1 1 auto;
+	/* preserve space for fixed bottom nav like on Home */
+	padding-bottom: calc(72px + env(safe-area-inset-bottom));
 }
 
 .container {

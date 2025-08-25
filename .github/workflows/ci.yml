@@ -2,13 +2,23 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [ main, develop, feat/** ]
   pull_request:
-    branches: [main, develop]
+    branches: [ main, develop, feat/** ]
 
 jobs:
-  ci:
+  build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: fleetopia-ui
+    env:
+      NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+      NEXT_PUBLIC_APP_ENV: ${{ secrets.NEXT_PUBLIC_APP_ENV }}
+      NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,14 +28,15 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: fleetopia-ui/package-lock.json
 
-      - name: Install dependencies
+      - name: Install deps
         run: npm ci
 
       - name: Lint
         run: npm run lint
 
-      - name: Type check
+        - name: Type check
         run: npm run typecheck
 
       - name: Test
@@ -33,6 +44,3 @@ jobs:
 
       - name: Build
         run: npm run build
-
-
-

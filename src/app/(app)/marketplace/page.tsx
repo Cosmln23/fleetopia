@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import { TopNavbar, BottomNav, MarketplaceHero, MarketplaceTabs, MarketplaceFilters, CargoCard, AddCargoModal, CargoDetailModal, FooterSection, ScoutStatus } from "@/shared/ui";
+import { MarketplaceHero, MarketplaceTabs, MarketplaceFilters, CargoCard, AddCargoModal, CargoDetailModal, FooterSection, ScoutStatus } from "@/shared/ui";
 import { ScoutBar } from "@/shared/ui/marketplace/ScoutBar";
 import type { CargoDetailData } from "@/shared/ui/marketplace/CargoDetailModal";
 
@@ -114,8 +114,6 @@ export default function MarketplacePage() {
 
   return (
     <div className="antialiased text-gray-100 bg-black pb-20">
-      <TopNavbar />
-      <BottomNav />
       <MarketplaceHero>
         <MarketplaceTabs active={activeTab} onChange={(t) => setActiveTab(t)} onAddCargo={() => setAddOpen(true)} />
         <div className="mt-4 mb-4">
