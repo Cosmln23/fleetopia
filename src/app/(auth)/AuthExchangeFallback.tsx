@@ -8,12 +8,12 @@ export default function AuthExchangeFallback() {
     const run = async () => {
       try {
         const url = new URL(window.location.href);
-        const hasCode = url.searchParams.has('code') || url.searchParams.has('access_token');
-        if (!hasCode) return;
+        const code = url.searchParams.get('code');
+        if (!code) return;
         const supabase = createBrowserClient();
         // Attempt exchange on client as a safety net
         try {
-          await supabase.auth.exchangeCodeForSession();
+          await supabase.auth.exchangeCodeForSession({ authCode: code });
         } catch {
           // ignore
         }
