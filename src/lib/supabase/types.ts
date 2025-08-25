@@ -201,4 +201,12 @@ export type Database = {
 // Helper generic to pick table row types
 export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
 
+// Auth metadata shape used in raw_user_meta_data (consumed by handle_new_user trigger)
+export type AuthUserMetadata = {
+  user_type: Database['public']['Enums']['user_role'] | 'shipper' | 'carrier' | 'admin';
+  full_name?: string | null;
+  company?: string | null;
+  email?: string | null;
+};
+
 

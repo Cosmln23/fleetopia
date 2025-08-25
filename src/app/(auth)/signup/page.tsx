@@ -59,12 +59,16 @@ export default function SignupPage() {
     const passwordEntry = form.get('password');
     const confirmEntry = form.get('confirmPassword');
     const userTypeEntry = form.get('userType');
+    const fullNameEntry = form.get('fullName');
+    const companyEntry = form.get('company');
     const termsEntry = form.get('termsAccepted');
     const data: SignupInput = {
       email: typeof emailEntry === 'string' ? emailEntry : '',
       password: typeof passwordEntry === 'string' ? passwordEntry : '',
       confirmPassword: typeof confirmEntry === 'string' ? confirmEntry : '',
       userType: (typeof userTypeEntry === 'string' ? userTypeEntry : '') as SignupInput['userType'],
+      fullName: typeof fullNameEntry === 'string' ? fullNameEntry : '',
+      company: typeof companyEntry === 'string' ? companyEntry : '',
       termsAccepted: typeof termsEntry === 'string' ? termsEntry === 'on' : false,
     } as SignupInput;
 
@@ -97,7 +101,11 @@ export default function SignupPage() {
           password: parsed.data.password,
           options: {
             emailRedirectTo,
-            data: { user_type: parsed.data.userType },
+            data: {
+              user_type: parsed.data.userType,
+              full_name: parsed.data.fullName,
+              company: parsed.data.company,
+            },
           },
         });
         if (error) {
@@ -145,11 +153,23 @@ export default function SignupPage() {
             {...(state?.fieldErrors?.confirmPassword ? { error: state.fieldErrors.confirmPassword } : {})}
             required
           />
+          <Input name="fullName" type="text" label="Full name (optional)" placeholder="John Doe" />
+          <Input name="company" type="text" label="Company (optional)" placeholder="ACME Logistics" />
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', color: 'rgba(255,255,255,0.8)' }}>
             <input type="radio" id="ut-shipper" name="userType" value="shipper" defaultChecked />
             <label htmlFor="ut-shipper">Shipper</label>
             <input type="radio" id="ut-carrier" name="userType" value="carrier" style={{ marginLeft: 12 }} />
             <label htmlFor="ut-carrier">Carrier</label>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, color: 'rgba(255,255,255,0.75)', fontSize: 12 }}>
+            <div style={{ padding: 8, border: '1px solid var(--glass-border)', borderRadius: 8 }}>
+              <strong>Shipper</strong>
+              <div>Postează încărcături și primește oferte de la transportatori.</div>
+            </div>
+            <div style={{ padding: 8, border: '1px solid var(--glass-border)', borderRadius: 8 }}>
+              <strong>Carrier</strong>
+              <div>Găsește încărcături și licitează pentru rute potrivite.</div>
+            </div>
           </div>
           {state?.fieldErrors?.userType ? (
             <div role="alert" style={{ color: '#ffb4b4' }}>{state.fieldErrors.userType}</div>

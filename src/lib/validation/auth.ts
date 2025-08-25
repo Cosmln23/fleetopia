@@ -23,6 +23,8 @@ export const signupSchema = z
     userType: z.enum(['shipper', 'carrier'], {
       errorMap: () => ({ message: 'Select a user type' }),
     }),
+    fullName: z.string().max(120, 'Full name too long').optional().or(z.literal('')).transform((v) => (v === '' ? undefined : v)),
+    company: z.string().max(160, 'Company name too long').optional().or(z.literal('')).transform((v) => (v === '' ? undefined : v)),
     termsAccepted: z.literal(true, {
       errorMap: () => ({ message: 'You must accept the terms' }),
     }),
