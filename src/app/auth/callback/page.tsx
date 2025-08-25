@@ -1,10 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase/client';
 
-export default function AuthCallbackPage() {
+export const dynamic = 'force-dynamic';
+
+function CallbackInner() {
   const search = useSearchParams();
   const router = useRouter();
 
@@ -31,6 +33,14 @@ export default function AuthCallbackPage() {
     <div style={{ display: 'grid', placeItems: 'center', minHeight: '60vh', color: 'rgba(255,255,255,0.85)' }}>
       Finalizăm autentificarea...
     </div>
+  );
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense fallback={<div style={{ display: 'grid', placeItems: 'center', minHeight: '60vh', color: 'rgba(255,255,255,0.85)' }}>Finalizăm autentificarea...</div>}>
+      <CallbackInner />
+    </Suspense>
   );
 }
 
