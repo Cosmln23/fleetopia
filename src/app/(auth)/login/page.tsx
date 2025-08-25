@@ -1,12 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { GlassCard, Input, Button } from '@/components/ui';
 import { createBrowserClient } from '@/lib/supabase/client';
 import { loginSchema } from '@/lib/validation/auth';
 
-export default function LoginPage() {
+export const dynamic = 'force-dynamic';
+
+function LoginInner() {
   const search = useSearchParams();
   const redirect = search.get('redirect') ?? '/marketplace';
   const initialError = search.get('error') ?? undefined;
@@ -111,6 +113,14 @@ export default function LoginPage() {
         </form>
       </div>
     </GlassCard>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div style={{ display: 'grid', placeItems: 'center', minHeight: '60vh', color: 'rgba(255,255,255,0.85)' }}>Loading login…</div>}>
+      <LoginInner />
+    </Suspense>
   );
 }
 
