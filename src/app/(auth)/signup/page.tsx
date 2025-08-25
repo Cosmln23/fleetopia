@@ -84,13 +84,13 @@ export default function SignupPage() {
 
     try {
       const supabase = createBrowserClient();
+      const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin) as string;
+      const emailRedirectTo: string = `${baseUrl}/auth/callback`;
       const { error } = await supabase.auth.signUp({
         email: parsed.data.email,
         password: parsed.data.password,
         options: {
-          emailRedirectTo: process.env.NEXT_PUBLIC_SITE_URL
-            ? `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
-            : undefined,
+          emailRedirectTo,
           data: { user_type: parsed.data.userType },
         },
       });
@@ -110,14 +110,21 @@ export default function SignupPage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <h1 style={{ margin: 0, color: 'rgba(255,255,255,0.9)' }}>Create your account</h1>
         <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <Input name="email" type="email" label="Email" placeholder="you@example.com" error={state?.fieldErrors?.email} required />
+          <Input
+            name="email"
+            type="email"
+            label="Email"
+            placeholder="you@example.com"
+            {...(state?.fieldErrors?.email ? { error: state.fieldErrors.email } : {})}
+            required
+          />
           <div>
             <Input
               name="password"
               type="password"
               label="Password"
               placeholder="••••••••"
-              error={state?.fieldErrors?.password}
+              {...(state?.fieldErrors?.password ? { error: state.fieldErrors.password } : {})}
               required
               onChange={(e) => setPassword(e.currentTarget.value)}
             />
@@ -128,7 +135,7 @@ export default function SignupPage() {
             type="password"
             label="Confirm password"
             placeholder="••••••••"
-            error={state?.fieldErrors?.confirmPassword}
+            {...(state?.fieldErrors?.confirmPassword ? { error: state.fieldErrors.confirmPassword } : {})}
             required
           />
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', color: 'rgba(255,255,255,0.8)' }}>
