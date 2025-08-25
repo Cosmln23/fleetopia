@@ -1,0 +1,162 @@
+'use client';
+
+import React from 'react';
+import { useFormStatus } from 'react-dom';
+import { GlassCard, Input, Button } from '@/components/ui';
+import { createBrowserClient } from '@/lib/supabase/client';
+import { signupSchema, type SignupInput } from '@/lib/validation/auth';
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" variant="primary" size="lg" loading={pending} style={{ width: '100%' }}>
+      Create account
+    </Button>
+  );
+}
+
+function PasswordStrength({ value }: { value: string }) {
+  const rules = [/.{8,}/, /[A-Za-z]/, /[0-9]/, /[^A-Za-z0-9]/];
+  const score = rules.reduce((acc, r) => acc + (r.test(value) ? 1 : 0), 0);
+  const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+  const colors = ['#ff8a8a', '#ffd27a', '#c2f07f', '#7de497'];
+  const idx = Math.max(0, Math.min(score - 1, 3));
+  return (
+    <div aria-live="polite" style={{ fontSize: 12, color: colors[idx] }}>
+      Password strength: {labels[idx]}
+    </div>
+  );
+}
+
+type UIState = {
+  fieldErrors?: Partial<Record<'email' | 'password' | 'confirmPassword' | 'userType' | 'termsAccepted', string>>;
+  formError?: string | null;
+  success?: boolean;
+};
+
+export default function SignupPage() {
+  const [state, setState] = React.useState<UIState | undefined>(undefined);
+  const [password, setPassword] = React.useState('');
+
+  if (state?.success) {
+    return (
+      <GlassCard className="glass-card" style={{ padding: 20 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <h1 style={{ margin: 0, color: 'rgba(255,255,255,0.9)' }}>Check your email</h1>
+          <p style={{ margin: 0, color: 'rgba(255,255,255,0.7)' }}>
+            We sent a confirmation link to your email. Follow it to activate your account.
+          </p>
+          <a href="/login" style={{ color: 'rgba(255,255,255,0.9)', textDecoration: 'underline' }}>Back to login</a>
+        </div>
+      </GlassCard>
+    );
+  }
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const data: SignupInput = {
+      email: String(form.get('email') ?? ''),
+      password: String(form.get('password') ?? ''),
+      confirmPassword: String(form.get('confirmPassword') ?? ''),
+      userType: String(form.get('userType') ?? ''),
+      termsAccepted: String(form.get('termsAccepted') ?? '') === 'on',
+    } as unknown as SignupInput;
+
+    const parsed = signupSchema.safeParse(data);
+    if (!parsed.success) {
+      const fieldErrors: UIState['fieldErrors'] = {};
+      for (const issue of parsed.error.issues) {
+        const key = issue.path[0];
+        if (
+          key === 'email' ||
+          key === 'password' ||
+          key === 'confirmPassword' ||
+          key === 'userType' ||
+          key === 'termsAccepted'
+        ) {
+          fieldErrors[key] = issue.message;
+        }
+      }
+      setState({ fieldErrors, formError: null });
+      return;
+    }
+
+    try {
+      const supabase = createBrowserClient();
+      const { error } = await supabase.auth.signUp({
+        email: parsed.data.email,
+        password: parsed.data.password,
+        options: {
+          emailRedirectTo: process.env.NEXT_PUBLIC_SITE_URL
+            ? `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
+            : undefined,
+          data: { user_type: parsed.data.userType },
+        },
+      });
+      if (error) {
+        setState({ formError: error.message });
+        return;
+      }
+      setState({ success: true });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unexpected error.';
+      setState({ formError: message });
+    }
+  }
+
+  return (
+    <GlassCard className="glass-card" style={{ padding: 20 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <h1 style={{ margin: 0, color: 'rgba(255,255,255,0.9)' }}>Create your account</h1>
+        <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Input name="email" type="email" label="Email" placeholder="you@example.com" error={state?.fieldErrors?.email} required />
+          <div>
+            <Input
+              name="password"
+              type="password"
+              label="Password"
+              placeholder="••••••••"
+              error={state?.fieldErrors?.password}
+              required
+              onChange={(e) => setPassword(e.currentTarget.value)}
+            />
+            <PasswordStrength value={password} />
+          </div>
+          <Input
+            name="confirmPassword"
+            type="password"
+            label="Confirm password"
+            placeholder="••••••••"
+            error={state?.fieldErrors?.confirmPassword}
+            required
+          />
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', color: 'rgba(255,255,255,0.8)' }}>
+            <input type="radio" id="ut-shipper" name="userType" value="shipper" defaultChecked />
+            <label htmlFor="ut-shipper">Shipper</label>
+            <input type="radio" id="ut-carrier" name="userType" value="carrier" style={{ marginLeft: 12 }} />
+            <label htmlFor="ut-carrier">Carrier</label>
+          </div>
+          {state?.fieldErrors?.userType ? (
+            <div role="alert" style={{ color: '#ffb4b4' }}>{state.fieldErrors.userType}</div>
+          ) : null}
+          <label style={{ display: 'flex', gap: 8, alignItems: 'center', color: 'rgba(255,255,255,0.8)' }}>
+            <input type="checkbox" name="termsAccepted" /> I agree to the <a href="/terms" style={{ color: 'inherit', textDecoration: 'underline' }}>Terms & Conditions</a>
+          </label>
+          {state?.fieldErrors?.termsAccepted ? (
+            <div role="alert" style={{ color: '#ffb4b4' }}>{state.fieldErrors.termsAccepted}</div>
+          ) : null}
+          {state?.formError ? (
+            <div role="alert" style={{ color: '#ffb4b4' }}>{state.formError}</div>
+          ) : null}
+          <SubmitButton />
+        </form>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <a href="/login" style={{ color: 'rgba(255,255,255,0.9)', textDecoration: 'underline' }}>Already have an account?</a>
+        </div>
+      </div>
+    </GlassCard>
+  );
+}
+
+

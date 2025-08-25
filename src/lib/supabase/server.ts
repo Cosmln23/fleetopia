@@ -33,7 +33,11 @@ export function createServerClient(): TypedClient {
         },
         async setAll(cookiesToSet: { name: string; value: string; options?: unknown }[]) {
           const store = await cookies();
-          cookiesToSet.forEach(({ name, value }) => {
+          const remember = store.get('ft_remember_me')?.value === '1';
+          cookiesToSet.forEach(({ name, value, options }) => {
+            const incoming: any = options ?? {};
+            // Respect Supabase-provided deletion/expiry options; only set maxAge if not provided
+            const finalMaxAge = typeof incoming.maxAge !== 'undefined' ? incoming.maxAge : (remember ? 60 * 60 * 24 * 30 : undefined);
             store.set({
               name,
               value,
@@ -41,6 +45,9 @@ export function createServerClient(): TypedClient {
               sameSite: 'lax',
               secure: secureCookie,
               path: '/',
+              // preserve explicit expires if provided, else use maxAge
+              ...(incoming.expires ? { expires: incoming.expires } : {}),
+              ...(typeof finalMaxAge !== 'undefined' ? { maxAge: finalMaxAge } : {}),
             });
           });
         },
@@ -79,7 +86,10 @@ export function createMiddlewareClient(req: NextRequest, res: NextResponse): Typ
           return req.cookies.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
         setAll(cookiesToSet: { name: string; value: string; options?: unknown }[]) {
-          cookiesToSet.forEach(({ name, value }) => {
+          const remember = req.cookies.get('ft_remember_me')?.value === '1';
+          cookiesToSet.forEach(({ name, value, options }) => {
+            const incoming: any = options ?? {};
+            const finalMaxAge = typeof incoming.maxAge !== 'undefined' ? incoming.maxAge : (remember ? 60 * 60 * 24 * 30 : undefined);
             res.cookies.set({
               name,
               value,
@@ -87,6 +97,8 @@ export function createMiddlewareClient(req: NextRequest, res: NextResponse): Typ
               sameSite: 'lax',
               secure: secureCookie,
               path: '/',
+              ...(incoming.expires ? { expires: incoming.expires } : {}),
+              ...(typeof finalMaxAge !== 'undefined' ? { maxAge: finalMaxAge } : {}),
             });
           });
         },
