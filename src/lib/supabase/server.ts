@@ -31,12 +31,11 @@ export function createServerClient(): TypedClient {
           const store = await cookies();
           return store.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        async setAll(cookiesToSet: { name: string; value: string; options?: unknown }[]) {
+        async setAll(cookiesToSet: { name: string; value: string; options?: { maxAge?: number; expires?: Date } }[]) {
           const store = await cookies();
           const remember = store.get('ft_remember_me')?.value === '1';
           cookiesToSet.forEach(({ name, value, options }) => {
-            const incoming: any = options ?? {};
-            // Respect Supabase-provided deletion/expiry options; only set maxAge if not provided
+            const incoming = options ?? {};
             const finalMaxAge = typeof incoming.maxAge !== 'undefined' ? incoming.maxAge : (remember ? 60 * 60 * 24 * 30 : undefined);
             store.set({
               name,
@@ -85,10 +84,10 @@ export function createMiddlewareClient(req: NextRequest, res: NextResponse): Typ
         getAll() {
           return req.cookies.getAll().map((c) => ({ name: c.name, value: c.value }));
         },
-        setAll(cookiesToSet: { name: string; value: string; options?: unknown }[]) {
+        setAll(cookiesToSet: { name: string; value: string; options?: { maxAge?: number; expires?: Date } }[]) {
           const remember = req.cookies.get('ft_remember_me')?.value === '1';
           cookiesToSet.forEach(({ name, value, options }) => {
-            const incoming: any = options ?? {};
+            const incoming = options ?? {};
             const finalMaxAge = typeof incoming.maxAge !== 'undefined' ? incoming.maxAge : (remember ? 60 * 60 * 24 * 30 : undefined);
             res.cookies.set({
               name,

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useFormStatus } from 'react-dom';
 import { useSearchParams } from 'next/navigation';
 import { GlassCard, Input, Button } from '@/components/ui';
 import { createBrowserClient } from '@/lib/supabase/client';
@@ -22,14 +21,17 @@ export default function LoginPage() {
     return raw;
   }
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setFormError(null);
     setFieldErrors({});
     const form = new FormData(e.currentTarget);
-    const email = String(form.get('email') ?? '');
-    const password = String(form.get('password') ?? '');
-    const remember = String(form.get('remember') ?? '') === 'on';
+    const emailEntry = form.get('email');
+    const passwordEntry = form.get('password');
+    const rememberEntry = form.get('remember');
+    const email = typeof emailEntry === 'string' ? emailEntry : '';
+    const password = typeof passwordEntry === 'string' ? passwordEntry : '';
+    const remember = typeof rememberEntry === 'string' ? rememberEntry === 'on' : false;
 
     const parsed = loginSchema.safeParse({ email, password, remember });
     if (!parsed.success) {
@@ -42,21 +44,23 @@ export default function LoginPage() {
       return;
     }
 
-    try {
-      setLoading(true);
-      document.cookie = `ft_remember_me=${remember ? '1' : '0'}; path=/`;
-      const supabase = createBrowserClient();
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        setFormError(error.message);
+    void (async () => {
+      try {
+        setLoading(true);
+        document.cookie = `ft_remember_me=${remember ? '1' : '0'}; path=/`;
+        const supabase = createBrowserClient();
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          setFormError(error.message);
+          setLoading(false);
+          return;
+        }
+        window.location.assign(sanitizeRedirect(redirect));
+      } catch (err) {
+        setFormError(err instanceof Error ? err.message : 'Unexpected error.');
         setLoading(false);
-        return;
       }
-      window.location.assign(sanitizeRedirect(redirect));
-    } catch (err) {
-      setFormError(err instanceof Error ? err.message : 'Unexpected error.');
-      setLoading(false);
-    }
+    })();
   }
 
   return (

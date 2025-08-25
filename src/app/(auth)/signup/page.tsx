@@ -55,13 +55,18 @@ export default function SignupPage() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
+    const emailEntry = form.get('email');
+    const passwordEntry = form.get('password');
+    const confirmEntry = form.get('confirmPassword');
+    const userTypeEntry = form.get('userType');
+    const termsEntry = form.get('termsAccepted');
     const data: SignupInput = {
-      email: String(form.get('email') ?? ''),
-      password: String(form.get('password') ?? ''),
-      confirmPassword: String(form.get('confirmPassword') ?? ''),
-      userType: String(form.get('userType') ?? ''),
-      termsAccepted: String(form.get('termsAccepted') ?? '') === 'on',
-    } as unknown as SignupInput;
+      email: typeof emailEntry === 'string' ? emailEntry : '',
+      password: typeof passwordEntry === 'string' ? passwordEntry : '',
+      confirmPassword: typeof confirmEntry === 'string' ? confirmEntry : '',
+      userType: (typeof userTypeEntry === 'string' ? userTypeEntry : '') as SignupInput['userType'],
+      termsAccepted: typeof termsEntry === 'string' ? termsEntry === 'on' : false,
+    } as SignupInput;
 
     const parsed = signupSchema.safeParse(data);
     if (!parsed.success) {

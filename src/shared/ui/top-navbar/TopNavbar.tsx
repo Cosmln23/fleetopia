@@ -15,7 +15,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({ brand = "Fleetopia" }) => 
   React.useEffect(() => {
     const supabase = createBrowserClient();
     // Initial session check
-    supabase.auth.getSession().then(({ data }) => setIsAuthenticated(!!data.session?.user));
+    void supabase.auth.getSession().then(({ data }) => setIsAuthenticated(!!data.session?.user));
     // Live updates
     const unsubscribe = onAuthStateChanged((_event, session) => {
       setIsAuthenticated(!!session?.user);
