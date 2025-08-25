@@ -66,8 +66,22 @@ export default function LoginPage() {
         <p style={{ margin: 0, color: 'rgba(255,255,255,0.7)' }}>Sign in to your account</p>
         <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <input type="hidden" name="redirect" value={redirect} />
-          <Input name="email" type="email" label="Email" placeholder="you@example.com" error={fieldErrors.email} required />
-          <Input name="password" type="password" label="Password" placeholder="••••••••" error={fieldErrors.password} required />
+          <Input
+            name="email"
+            type="email"
+            label="Email"
+            placeholder="you@example.com"
+            {...(fieldErrors.email ? { error: fieldErrors.email } : {})}
+            required
+          />
+          <Input
+            name="password"
+            type="password"
+            label="Password"
+            placeholder="••••••••"
+            {...(fieldErrors.password ? { error: fieldErrors.password } : {})}
+            required
+          />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <label style={{ display: 'flex', gap: 8, alignItems: 'center', color: 'rgba(255,255,255,0.8)' }}>
               <input
