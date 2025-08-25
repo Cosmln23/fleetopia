@@ -16,10 +16,13 @@ export async function POST(req: NextRequest) {
   const supabase = createServerClient();
   const formData = await req.formData();
 
+  const emailEntry = formData.get('email');
+  const passwordEntry = formData.get('password');
+  const rememberEntry = formData.get('remember');
   const parsed = loginSchema.safeParse({
-    email: String(formData.get('email') ?? ''),
-    password: String(formData.get('password') ?? ''),
-    remember: String(formData.get('remember') ?? '') === 'on',
+    email: typeof emailEntry === 'string' ? emailEntry : '',
+    password: typeof passwordEntry === 'string' ? passwordEntry : '',
+    remember: typeof rememberEntry === 'string' ? rememberEntry === 'on' : false,
   });
 
   const redirectTo = sanitizeRedirect(formData.get('redirect'));

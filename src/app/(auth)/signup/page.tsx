@@ -89,8 +89,8 @@ export default function SignupPage() {
 
     try {
       const supabase = createBrowserClient();
-      const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin) as string;
-      const emailRedirectTo: string = `${baseUrl}/auth/callback`;
+      const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin);
+      const emailRedirectTo = `${baseUrl}/auth/callback`;
       const { error } = await supabase.auth.signUp({
         email: parsed.data.email,
         password: parsed.data.password,
