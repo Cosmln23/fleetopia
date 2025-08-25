@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { env } from '@/lib/env';
+import { getEnv } from '@/lib/env';
+import type { ServerEnv } from '@/lib/env';
 import type { Database } from '@/lib/supabase/types';
 
 type AdminClient = SupabaseClient<Database>;
@@ -12,11 +13,12 @@ function assertServerContext() {
 
 export function createAdminClient(serviceRoleKey?: string): AdminClient {
   assertServerContext();
-  const key = serviceRoleKey ?? env.SUPABASE_SERVICE_ROLE_KEY;
+  const serverEnv = getEnv() as ServerEnv;
+  const key = serviceRoleKey ?? serverEnv.SUPABASE_SERVICE_ROLE_KEY;
   if (!key) {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY is required for admin client.');
   }
-  return createClient<Database>(env.NEXT_PUBLIC_SUPABASE_URL, key, {
+  return createClient<Database>(serverEnv.NEXT_PUBLIC_SUPABASE_URL, key, {
     auth: { persistSession: false, autoRefreshToken: false },
     global: { headers: { 'X-Client-Context': 'admin' } },
   });
