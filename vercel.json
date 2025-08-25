@@ -1,5 +1,1 @@
-﻿{
-  "buildCommand": "cd fleetopia-ui && npm ci && npm run build",
-  "outputDirectory": "fleetopia-ui/.next"
-}
-
+{"buildCommand":"cd fleetopia-ui && npm ci && npm run build","outputDirectory":"fleetopia-ui/.next"}
