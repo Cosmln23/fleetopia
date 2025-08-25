@@ -14,7 +14,7 @@ export default function AuthCallbackPage() {
         const supabase = createBrowserClient();
         const code = search.get('code');
         if (code) {
-          await supabase.auth.exchangeCodeForSession({ authCode: code });
+          await supabase.auth.exchangeCodeForSession(code);
         }
       } catch {
         // ignore; if it fails, user can try login manually

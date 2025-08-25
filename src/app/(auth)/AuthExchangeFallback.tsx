@@ -13,7 +13,7 @@ export default function AuthExchangeFallback() {
         const supabase = createBrowserClient();
         // Attempt exchange on client as a safety net
         try {
-          await supabase.auth.exchangeCodeForSession({ authCode: code });
+          await supabase.auth.exchangeCodeForSession(code);
         } catch {
           // ignore
         }
