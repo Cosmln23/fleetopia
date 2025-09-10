@@ -244,81 +244,6 @@ export default function MarketplacePage() {
         </div>
       </main>
 
-      {/* ACTIVE DEALS */}
-      <section className="scroll-mt-24 max-w-7xl mx-auto px-4 sm:px-6 pt-16">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl sm:text-3xl font-medium tracking-tight">Active Deals</h2>
-          <button className="inline-flex items-center gap-2 h-9 px-3 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition text-sm">
-            <FileDown className="h-4 w-4" /> Export
-          </button>
-        </div>
-        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-          {/* Deal item 1 */}
-          <div className="rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm p-5">
-            <div className="flex items-center justify-between">
-              <div className="text-base font-medium tracking-tight">București → Cluj-Napoca</div>
-              <span className="px-2 py-1 rounded-md bg-emerald-400/15 text-emerald-300 border border-emerald-400/30 text-[11px] inline-flex items-center gap-1">
-                <CheckCircle className="h-3.5 w-3.5" /> În curs
-              </span>
-            </div>
-            <div className="mt-1 text-sm text-white/60">#DL-7420 · ETA: azi, 18:30</div>
-            <div className="mt-4">
-              <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-emerald-400 to-cyan-400" style={{width: '68%'}}></div>
-              </div>
-              <div className="mt-2 text-xs text-white/50">68% parcurs · Ultima locație: Ploiești</div>
-            </div>
-          </div>
-
-          {/* Deal item 2 */}
-          <div className="rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm p-5">
-            <div className="flex items-center justify-between">
-              <div className="text-base font-medium tracking-tight">Timișoara → Oradea</div>
-              <span className="px-2 py-1 rounded-md bg-amber-400/15 text-amber-300 border border-amber-400/30 text-[11px] inline-flex items-center gap-1">
-                <Clock3 className="h-3.5 w-3.5" /> Întârziere ușoară
-              </span>
-            </div>
-            <div className="mt-1 text-sm text-white/60">#DL-7421 · ETA: mâine, 09:15</div>
-            <div className="mt-4">
-              <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-amber-400 to-rose-400" style={{width: '42%'}}></div>
-              </div>
-              <div className="mt-2 text-xs text-white/50">42% parcurs · Ultima locație: Arad</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Backend Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-20">
-        <div className="rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm p-8">
-          <h2 className="text-2xl font-medium tracking-tight mb-4">🔧 Backend Integration</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <h3 className="text-lg font-medium text-emerald-300">API Endpoints Ready:</h3>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li>• GET /api/marketplace/all-offers</li>
-                <li>• GET /api/marketplace/my-cargo</li>
-                <li>• GET /api/marketplace/my-quotes</li>
-                <li>• GET /api/marketplace/active-deals</li>
-                <li>• POST /api/cargo/create</li>
-                <li>• POST /api/cargo/[id]/quote</li>
-              </ul>
-            </div>
-            <div className="space-y-3">
-              <h3 className="text-lg font-medium text-cyan-300">Features:</h3>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li>• Real-time offers filtering</li>
-                <li>• Quote management system</li>
-                <li>• Deal progress tracking</li>
-                <li>• WebSocket notifications</li>
-                <li>• Advanced search & filters</li>
-                <li>• Chat integration</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Add Cargo Modal */}
       {isAddCargoOpen && (
@@ -609,24 +534,6 @@ export default function MarketplacePage() {
                     <MessageCircle className="h-4 w-4" />
                     Chat
                   </button>
-                </div>
-                <div className="grid grid-cols-3 gap-3 mt-3">
-                  <button className="h-9 px-3 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition text-xs">
-                    Ignoră
-                  </button>
-                  <button className="h-9 px-3 rounded-lg border border-yellow-400/30 bg-yellow-400/15 hover:bg-yellow-400/20 text-yellow-200 transition text-xs flex items-center justify-center gap-1">
-                    <Heart className="h-3 w-3" />
-                    Salvează
-                  </button>
-                  <a 
-                    href={`https://www.google.com/maps/dir/${encodeURIComponent(selectedCargo.route.split(' → ')[0])}/${encodeURIComponent(selectedCargo.route.split(' → ')[1])}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="h-9 px-3 rounded-lg border border-purple-400/30 bg-purple-400/15 hover:bg-purple-400/20 text-purple-200 transition text-xs flex items-center justify-center gap-1"
-                  >
-                    <MapPin className="h-3 w-3" />
-                    Hartă
-                  </a>
                 </div>
               </div>
             </div>
