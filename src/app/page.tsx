@@ -7,6 +7,7 @@ import QuickActions from '@/components/QuickActions';
 import CodePreview from '@/components/CodePreview';
 import HowItWorks from '@/components/HowItWorks';
 import TestimonialSlider from '@/components/TestimonialSlider';
+import CursorSpotlight from '@/components/CursorSpotlight';
 import Link from 'next/link';
 
 export default function HomePage() {
@@ -92,7 +93,7 @@ export default function HomePage() {
       {/* Add Cargo Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeModal} />
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={closeModal} />
           <div className="relative bg-[#0E0E13] rounded-2xl border border-white/10 p-6 max-w-md w-full">
             <h3 className="text-lg font-medium">Add Cargo Modal</h3>
             <p className="mt-2 text-white/60">Modal functionality will be implemented with backend integration.</p>
@@ -105,6 +106,8 @@ export default function HomePage() {
           </div>
         </div>
       )}
+      
+      <CursorSpotlight intensity="subtle" size={275} />
     </div>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import TopBar from '@/components/TopBar';
+import CursorSpotlight from '@/components/CursorSpotlight';
 import Link from 'next/link';
 import { SlidersHorizontal, MapPin, Eye, CheckCircle, Clock3, FileDown, Shield, Calendar, Truck, MessageCircle, Heart, X } from 'lucide-react';
 
@@ -360,7 +361,7 @@ export default function MarketplacePage() {
       {/* Add Cargo Modal */}
       {isAddCargoOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => { setIsAddCargoOpen(false); }} />
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => { setIsAddCargoOpen(false); }} />
           <div className="relative max-w-2xl w-full">
             <div className="rounded-xl border border-white/10 overflow-hidden bg-black/40">
               {/* Editor Header */}
@@ -458,7 +459,7 @@ export default function MarketplacePage() {
       {/* Filters Modal */}
       {isFiltersOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => { setIsFiltersOpen(false); }} />
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => { setIsFiltersOpen(false); }} />
           <div className="relative max-w-md w-full">
             <div className="rounded-xl border border-white/10 overflow-hidden bg-black/60 backdrop-blur-md">
               {/* Editor Header */}
@@ -577,7 +578,7 @@ export default function MarketplacePage() {
       {/* Cargo Detail Modal */}
       {selectedCargo && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => { setSelectedCargo(null); }} />
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => { setSelectedCargo(null); }} />
           <div className="relative max-w-2xl w-full">
             <div className="rounded-xl border border-white/10 overflow-hidden bg-black/40">
               {/* Editor Header */}
@@ -682,6 +683,8 @@ export default function MarketplacePage() {
           </div>
         </div>
       </footer>
+      
+      <CursorSpotlight intensity="subtle" size={275} />
     </div>
   );
 }

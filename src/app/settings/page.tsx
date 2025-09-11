@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import TopBar from '@/components/TopBar';
 import SettingsCard from '@/components/SettingsCard';
+import CursorSpotlight from '@/components/CursorSpotlight';
 import Link from 'next/link';
 import { User, Bell, Shield, CreditCard, Download, Trash2 } from 'lucide-react';
 
@@ -232,6 +233,8 @@ export default function SettingsPage() {
           </div>
         </div>
       </footer>
+      
+      <CursorSpotlight intensity="subtle" size={275} />
     </div>
   );
 }
