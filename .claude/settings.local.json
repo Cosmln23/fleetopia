@@ -3,7 +3,10 @@
     "allow": [
       "Read(//mnt/d/CODEX/fleetopia/src/app/marketplace/**)",
       "Read(//mnt/d/CODEX/fleetopia/src/**)",
-      "Read(//mnt/d/CODEX/fleetopia/**)"
+      "Read(//mnt/d/CODEX/fleetopia/**)",
+      "Bash(npm install:*)",
+      "Bash(npx prisma init:*)",
+      "Bash(npm run prisma:push:*)"
     ],
     "deny": [],
     "ask": []
