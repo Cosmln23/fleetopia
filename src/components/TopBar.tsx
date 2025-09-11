@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Menu, Bell, CircleUser, X } from 'lucide-react'
+import { Menu, Bell, CircleUser, X, Truck, CheckCircle, DollarSign, AlertTriangle } from 'lucide-react'
 
 export default function TopBar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -111,8 +111,8 @@ export default function TopBar() {
                     {/* Notification 1 */}
                     <div className="p-3 hover:bg-white/5 border-b border-white/10 cursor-pointer">
                       <div className="flex gap-3">
-                        <div className="h-10 w-10 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
-                          <span className="text-white text-xs">🚛</span>
+                        <div className="h-10 w-10 rounded-full bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center flex-shrink-0">
+                          <Truck className="h-4 w-4 text-emerald-300" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start">
@@ -128,8 +128,8 @@ export default function TopBar() {
                     {/* Notification 2 */}
                     <div className="p-3 hover:bg-white/5 border-b border-white/10 cursor-pointer">
                       <div className="flex gap-3">
-                        <div className="h-10 w-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-                          <span className="text-white text-xs">✅</span>
+                        <div className="h-10 w-10 rounded-full bg-green-400/15 border border-green-400/30 flex items-center justify-center flex-shrink-0">
+                          <CheckCircle className="h-4 w-4 text-green-300" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start">
@@ -144,8 +144,8 @@ export default function TopBar() {
                     {/* Notification 3 */}
                     <div className="p-3 hover:bg-white/5 border-b border-white/10 cursor-pointer">
                       <div className="flex gap-3">
-                        <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
-                          <span className="text-white text-xs">💰</span>
+                        <div className="h-10 w-10 rounded-full bg-blue-400/15 border border-blue-400/30 flex items-center justify-center flex-shrink-0">
+                          <DollarSign className="h-4 w-4 text-blue-300" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start">
@@ -160,8 +160,8 @@ export default function TopBar() {
                     {/* Notification 4 */}
                     <div className="p-3 hover:bg-white/5 cursor-pointer">
                       <div className="flex gap-3">
-                        <div className="h-10 w-10 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0">
-                          <span className="text-white text-xs">⚠️</span>
+                        <div className="h-10 w-10 rounded-full bg-orange-400/15 border border-orange-400/30 flex items-center justify-center flex-shrink-0">
+                          <AlertTriangle className="h-4 w-4 text-orange-300" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start">

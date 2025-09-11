@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { MessageCircle, X, Send, ArrowLeft } from 'lucide-react'
+import { MessageCircle, X, Send, ArrowLeft, AlertTriangle } from 'lucide-react'
 
 export default function ChatWidget() {
   const [isChatOpen, setIsChatOpen] = useState(false)
@@ -39,9 +39,9 @@ export default function ChatWidget() {
           }
           setIsChatOpen(!isChatOpen)
         }}
-        className="fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center group"
+        className="fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full bg-emerald-400/15 hover:bg-emerald-400/20 border border-emerald-400/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center group"
       >
-        <MessageCircle className="h-6 w-6 text-white group-hover:scale-110 transition-transform" />
+        <MessageCircle className="h-6 w-6 text-emerald-300 group-hover:scale-110 transition-transform" />
         <span className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 rounded-full bg-cyan-400 text-[10px] font-medium text-black flex items-center justify-center">3</span>
       </button>
 
@@ -92,13 +92,13 @@ export default function ChatWidget() {
                 <div 
                   onClick={(e) => {
                     e.stopPropagation()
-                    setSelectedContact({id: 'mt', name: 'Mihai Transport SRL', avatar: 'MT', color: 'bg-emerald-500'})
+                    setSelectedContact({id: 'mt', name: 'Mihai Transport SRL', avatar: 'MT', color: 'bg-emerald-400/15 border-emerald-400/30 text-emerald-300'})
                     setCurrentView('chat')
                   }}
                   className="p-3 border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 transition cursor-pointer"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-full bg-emerald-500 flex items-center justify-center text-sm text-white font-medium flex-shrink-0">
+                    <div className="h-10 w-10 rounded-full bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center text-sm text-emerald-300 font-medium flex-shrink-0">
                       MT
                     </div>
                     <div className="flex-1 min-w-0">
@@ -116,13 +116,13 @@ export default function ChatWidget() {
                 <div 
                   onClick={(e) => {
                     e.stopPropagation()
-                    setSelectedContact({id: 'el', name: 'Elena Logistics', avatar: 'EL', color: 'bg-blue-500'})
+                    setSelectedContact({id: 'el', name: 'Elena Logistics', avatar: 'EL', color: 'bg-blue-400/15 border-blue-400/30 text-blue-300'})
                     setCurrentView('chat')
                   }}
                   className="p-3 border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 transition cursor-pointer"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-sm text-white font-medium flex-shrink-0">
+                    <div className="h-10 w-10 rounded-full bg-blue-400/15 border border-blue-400/30 flex items-center justify-center text-sm text-blue-300 font-medium flex-shrink-0">
                       EL
                     </div>
                     <div className="flex-1 min-w-0">
@@ -140,13 +140,13 @@ export default function ChatWidget() {
                 <div 
                   onClick={(e) => {
                     e.stopPropagation()
-                    setSelectedContact({id: 'dt', name: 'Dan Transport', avatar: 'DT', color: 'bg-purple-500'})
+                    setSelectedContact({id: 'dt', name: 'Dan Transport', avatar: 'DT', color: 'bg-purple-400/15 border-purple-400/30 text-purple-300'})
                     setCurrentView('chat')
                   }}
                   className="p-3 border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 transition cursor-pointer"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-full bg-purple-500 flex items-center justify-center text-sm text-white font-medium flex-shrink-0">
+                    <div className="h-10 w-10 rounded-full bg-purple-400/15 border border-purple-400/30 flex items-center justify-center text-sm text-purple-300 font-medium flex-shrink-0">
                       DT
                     </div>
                     <div className="flex-1 min-w-0">
@@ -164,13 +164,13 @@ export default function ChatWidget() {
                 <div 
                   onClick={(e) => {
                     e.stopPropagation()
-                    setSelectedContact({id: 'at', name: 'Alexandru Transport', avatar: 'AT', color: 'bg-orange-500'})
+                    setSelectedContact({id: 'at', name: 'Alexandru Transport', avatar: 'AT', color: 'bg-orange-400/15 border-orange-400/30 text-orange-300'})
                     setCurrentView('chat')
                   }}
                   className="p-3 border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 transition cursor-pointer"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-full bg-orange-500 flex items-center justify-center text-sm text-white font-medium flex-shrink-0">
+                    <div className="h-10 w-10 rounded-full bg-orange-400/15 border border-orange-400/30 flex items-center justify-center text-sm text-orange-300 font-medium flex-shrink-0">
                       AT
                     </div>
                     <div className="flex-1 min-w-0">
