@@ -33,6 +33,8 @@ model User {
   shipperDeals   Deal[]   @relation("ShipperDeals")
   transporterDeals Deal[] @relation("TransporterDeals")
   chatMessages   ChatMessage[]
+  userSettings   UserSettings?
+  notificationSettings NotificationSettings?
 }
 
 model Cargo {
@@ -209,4 +211,64 @@ model ChatMessage {
   @@index([threadId])
   @@index([senderId])
   @@index([createdAt])
+}
+
+model UserSettings {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  
+  // Display preferences
+  language        String   @default("ro") // ro, en
+  timezone        String   @default("Europe/Bucharest")
+  currency        String   @default("EUR")
+  
+  // Profile settings
+  isProfilePublic Boolean  @default(true)
+  showLocation    Boolean  @default(true)
+  showContactInfo Boolean  @default(false)
+  
+  // Business preferences
+  preferredVehicleTypes Json? // Array of vehicle types
+  operatingRegions      Json? // Array of countries/regions
+  businessType    String?  // Shipper, Carrier, Both
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model NotificationSettings {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  
+  // Email notifications
+  emailNewQuotes  Boolean  @default(true)
+  emailQuoteAccepted Boolean @default(true)
+  emailNewMessages Boolean @default(true)
+  emailDealUpdates Boolean @default(true)
+  emailMarketing  Boolean  @default(false)
+  
+  // Push notifications
+  pushNewQuotes   Boolean  @default(true)
+  pushQuoteAccepted Boolean @default(true)
+  pushNewMessages Boolean  @default(true)
+  pushDealUpdates Boolean  @default(true)
+  
+  // In-app notifications
+  inAppNewQuotes  Boolean  @default(true)
+  inAppQuoteAccepted Boolean @default(true)
+  inAppNewMessages Boolean @default(true)
+  inAppDealUpdates Boolean @default(true)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
