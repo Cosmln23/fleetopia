@@ -26,4 +26,187 @@ model User {
   stripeCustomerId String? // Stripe customer ID
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+
+  // Relations
+  cargos         Cargo[]
+  quotes         Quote[]
+  shipperDeals   Deal[]   @relation("ShipperDeals")
+  transporterDeals Deal[] @relation("TransporterDeals")
+  chatMessages   ChatMessage[]
+}
+
+model Cargo {
+  id              String   @id @default(cuid())
+  userId          String
+  title           String
+  description     String?
+  
+  // Pickup
+  pickupAddress   String
+  pickupCity      String
+  pickupCountry   String
+  pickupDate      DateTime
+  pickupTimeStart String?
+  pickupTimeEnd   String?
+  
+  // Delivery
+  deliveryAddress String
+  deliveryCity    String
+  deliveryCountry String
+  deliveryDate    DateTime
+  deliveryTimeStart String?
+  deliveryTimeEnd String?
+  
+  // Cargo details
+  weight          Float?   // kg
+  volume          Float?   // m³
+  cargoType       String   // General, Fragile, Hazardous, Refrigerated
+  packaging       String?  // Pallets, Boxes, Loose, etc
+  specialRequirements String?
+  
+  // Pricing
+  estimatedValue  Float?   // EUR
+  budgetMin       Float?   // EUR
+  budgetMax       Float?   // EUR
+  
+  // Status
+  status          String   @default("Active") // Active, Assigned, Completed, Cancelled
+  isUrgent        Boolean  @default(false)
+  isPublic        Boolean  @default(true)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quotes          Quote[]
+  deals           Deal[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([pickupCity])
+  @@index([deliveryCity])
+}
+
+model Quote {
+  id              String   @id @default(cuid())
+  cargoId         String
+  carrierId       String   // User ID of carrier
+  
+  // Pricing
+  totalPrice      Float    // EUR
+  pricePerKm      Float?   // EUR/km
+  estimatedDistance Float? // km
+  
+  // Service details
+  vehicleType     String   // Van, Truck, Semi-trailer, etc
+  estimatedPickupTime String?
+  estimatedDeliveryTime String?
+  notes           String?
+  
+  // Quote status
+  status          String   @default("Pending") // Pending, Accepted, Rejected, Expired
+  validUntil      DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  cargo           Cargo    @relation(fields: [cargoId], references: [id], onDelete: Cascade)
+  carrier         User     @relation(fields: [carrierId], references: [id], onDelete: Cascade)
+  deal            Deal?
+  chatThreads     ChatThread[]
+
+  @@index([cargoId])
+  @@index([carrierId])
+  @@index([status])
+}
+
+model Deal {
+  id              String   @id @default(cuid())
+  cargoId         String   @unique
+  quoteId         String   @unique
+  shipperId       String   // Original cargo owner
+  transporterId   String   // Quote owner who got the deal
+  
+  // Deal details
+  totalAmount     Float    // Final agreed price in EUR
+  status          String   @default("Active") // Active, InTransit, Delivered, Completed, Cancelled
+  progress        Float    @default(0.0) // 0-100 percentage
+  
+  // Timeline tracking
+  timeline        Json?    // Array of status updates with timestamps
+  
+  // Dates
+  agreedPickupDate    DateTime?
+  agreedDeliveryDate  DateTime?
+  actualPickupDate    DateTime?
+  actualDeliveryDate  DateTime?
+  
+  createdAt       DateTime @default(now())
+  completedAt     DateTime?
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  cargo           Cargo    @relation(fields: [cargoId], references: [id], onDelete: Cascade)
+  quote           Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  shipper         User     @relation("ShipperDeals", fields: [shipperId], references: [id], onDelete: Cascade)
+  transporter     User     @relation("TransporterDeals", fields: [transporterId], references: [id], onDelete: Cascade)
+  chatThreads     ChatThread[]
+
+  @@index([shipperId])
+  @@index([transporterId])
+  @@index([status])
+}
+
+model ChatThread {
+  id              String   @id @default(cuid())
+  dealId          String?  // Optional - chat can exist before deal
+  quoteId         String?  // Optional - chat can exist for quote discussion
+  
+  // Participants (array of user IDs)
+  participants    Json     // [userId1, userId2]
+  
+  // Metadata
+  title           String?  // Optional thread title
+  isActive        Boolean  @default(true)
+  lastMessageAt   DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  deal            Deal?    @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  quote           Quote?   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  messages        ChatMessage[]
+
+  @@index([dealId])
+  @@index([quoteId])
+}
+
+model ChatMessage {
+  id              String   @id @default(cuid())
+  threadId        String
+  senderId        String
+  
+  // Message content
+  content         String
+  messageType     String   @default("text") // text, image, file, system
+  attachments     Json?    // Array of file URLs/metadata
+  
+  // Message status
+  isRead          Boolean  @default(false)
+  isEdited        Boolean  @default(false)
+  isDeleted       Boolean  @default(false)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  thread          ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  sender          User       @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([threadId])
+  @@index([senderId])
+  @@index([createdAt])
 }
