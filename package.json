@@ -13,13 +13,18 @@
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "health": "node tools/health-check.js",
+    "fix-cache": "rmdir /s /q .next\\static 2>nul & rmdir /s /q .next\\server 2>nul & echo Cache cleared. Run 'npm run dev' to regenerate.",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.10",
     "@prisma/client": "^6.16.1",
     "@stripe/stripe-js": "^7.9.0",
     "@supabase/supabase-js": "^2.57.4",
+    "@upstash/ratelimit": "^2.0.6",
+    "@upstash/redis": "^1.35.3",
     "autoprefixer": "^10.4.21",
     "lucide-react": "^0.460.0",
     "next": "^14.2.18",
