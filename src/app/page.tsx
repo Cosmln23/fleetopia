@@ -45,32 +45,6 @@ export default function HomePage() {
         <TestimonialSlider />
       </main>
 
-      {/* Backend Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-20">
-        <div className="rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm p-8">
-          <h2 className="text-2xl font-medium tracking-tight mb-4">🔧 Backend Integration</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <h3 className="text-lg font-medium text-emerald-300">API Endpoints Ready:</h3>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li>• GET /api/home-data</li>
-                <li>• POST /api/cargo/quick-post</li>
-                <li>• GET /api/loads/quick-search</li>
-                <li>• GET /api/deals/active</li>
-              </ul>
-            </div>
-            <div className="space-y-3">
-              <h3 className="text-lg font-medium text-cyan-300">Features:</h3>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li>• Dynamic hero content</li>
-                <li>• Quick actions functionality</li>
-                <li>• Real-time cargo preview</li>
-                <li>• User activity tracking</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Footer */}
       <footer className="mt-20 border-t border-white/10 bg-black/20 backdrop-blur-sm">

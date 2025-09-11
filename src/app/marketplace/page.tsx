@@ -21,19 +21,43 @@ export default function MarketplacePage() {
 
       {/* MARKETPLACE */}
       <main className="scroll-mt-24 max-w-7xl mx-auto px-4 sm:px-6 pt-16">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-medium tracking-tight">Piața — Toate Ofertele</h1>
-            {/* Search Bar */}
-            <div className="mt-4 max-w-lg">
-              <input 
-                type="text" 
-                placeholder="Caută după destinație, tip cargo sau companie..."
-                className="w-full h-11 px-4 rounded-lg bg-white/[0.06] border border-white/10 placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 focus:border-cyan-400/30 text-sm"
-              />
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-tight">Piața — Toate Ofertele</h1>
+            <div className="md:hidden">
+              <button 
+                onClick={() => setIsFiltersOpen(true)}
+                className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+              </button>
             </div>
           </div>
-          <div className="hidden md:flex items-center gap-2">
+          
+          {/* Search Bar */}
+          <div className="w-full">
+            <input 
+              type="text" 
+              placeholder="Caută după destinație, tip cargo sau companie..."
+              className="w-full h-11 px-4 rounded-lg bg-white/[0.06] border border-white/10 placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 focus:border-cyan-400/30 text-sm"
+            />
+          </div>
+
+          {/* Mobile Action Buttons */}
+          <div className="md:hidden flex gap-2">
+            <button className="flex-1 h-9 px-3 rounded-lg border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 text-red-200 transition text-sm">
+              Delete Cargo
+            </button>
+            <button 
+              onClick={() => setIsAddCargoOpen(true)}
+              className="flex-1 h-9 px-3 rounded-lg border border-emerald-400/30 bg-emerald-400/15 hover:bg-emerald-400/20 text-emerald-200 transition text-sm"
+            >
+              Add Cargo
+            </button>
+          </div>
+
+          {/* Desktop Action Buttons */}
+          <div className="hidden md:flex items-center gap-2 justify-end">
             <button 
               onClick={() => setIsFiltersOpen(true)}
               className="inline-flex items-center gap-2 h-9 px-3 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition text-sm"
@@ -54,20 +78,20 @@ export default function MarketplacePage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="mt-6 flex items-center gap-1">
-          <button className="px-4 py-2 rounded-lg bg-emerald-400/15 text-emerald-300 border border-emerald-400/30 text-sm font-medium">
+        <div className="mt-6 flex items-center gap-1 overflow-x-auto scrollbar-hide">
+          <button className="px-3 sm:px-4 py-2 rounded-lg bg-emerald-400/15 text-emerald-300 border border-emerald-400/30 text-xs sm:text-sm font-medium whitespace-nowrap">
             ALL OFFERS
           </button>
-          <span className="text-white/30 mx-1">|</span>
-          <button className="px-4 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition text-sm">
+          <span className="text-white/30 mx-1 hidden sm:inline">|</span>
+          <button className="px-3 sm:px-4 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition text-xs sm:text-sm whitespace-nowrap">
             MY CARGO
           </button>
-          <span className="text-white/30 mx-1">|</span>
-          <button className="px-4 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition text-sm">
+          <span className="text-white/30 mx-1 hidden sm:inline">|</span>
+          <button className="px-3 sm:px-4 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition text-xs sm:text-sm whitespace-nowrap">
             MY QUOTES
           </button>
-          <span className="text-white/30 mx-1">|</span>
-          <button className="px-4 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition text-sm">
+          <span className="text-white/30 mx-1 hidden sm:inline">|</span>
+          <button className="px-3 sm:px-4 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition text-xs sm:text-sm whitespace-nowrap">
             ACTIVE DEALS
           </button>
         </div>

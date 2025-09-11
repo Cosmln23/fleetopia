@@ -22,7 +22,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Settings Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Account Settings */}
           <div className="rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm p-6 hover:bg-black/50 transition">
             <div className="flex items-start gap-4">
@@ -209,37 +209,6 @@ export default function SettingsPage() {
         </div>
       </main>
 
-      {/* Backend Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-20">
-        <div className="rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm p-8">
-          <h2 className="text-2xl font-medium tracking-tight mb-4">🔧 Backend Integration</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <h3 className="text-lg font-medium text-emerald-300">API Endpoints Ready:</h3>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li>• GET /api/settings/general</li>
-                <li>• PUT /api/settings/general</li>
-                <li>• GET /api/settings/account</li>
-                <li>• PUT /api/settings/account/profile</li>
-                <li>• GET /api/settings/notifications</li>
-                <li>• POST /api/settings/subscription/upgrade</li>
-                <li>• POST /api/settings/data/export</li>
-              </ul>
-            </div>
-            <div className="space-y-3">
-              <h3 className="text-lg font-medium text-cyan-300">Features:</h3>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li>• User profile management</li>
-                <li>• Notification preferences</li>
-                <li>• Stripe billing integration</li>
-                <li>• GDPR data export/deletion</li>
-                <li>• Security settings</li>
-                <li>• Two-factor authentication</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Footer */}
       <footer className="mt-20 border-t border-white/10 bg-black/20 backdrop-blur-sm">
