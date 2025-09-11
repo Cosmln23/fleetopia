@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import TopBar from '@/components/TopBar'
 import Link from 'next/link'
 import { SlidersHorizontal, MapPin, Eye, CheckCircle, Clock3, FileDown, Shield, Calendar, Truck, MessageCircle, Heart, X } from 'lucide-react'
@@ -8,19 +8,39 @@ import { SlidersHorizontal, MapPin, Eye, CheckCircle, Clock3, FileDown, Shield, 
 export default function MarketplacePage() {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
   const [isAddCargoOpen, setIsAddCargoOpen] = useState(false)
-  const [selectedCargo, setSelectedCargo] = useState(null)
+  const [selectedCargo, setSelectedCargo] = useState<any>(null)
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled = window.scrollY > 50
+      setIsScrolled(scrolled)
+      
+      const content = document.querySelector('.scroll-blur-content')
+      if (content) {
+        if (window.scrollY > 100) {
+          content.classList.add('scrolling')
+        } else {
+          content.classList.remove('scrolling')
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
     <div 
-      className="min-h-screen bg-cover bg-center bg-fixed"
+      className={"min-h-screen bg-cover bg-center bg-fixed scroll-blur-container " + (isScrolled ? 'scrolled' : '')}
       style={{
-        backgroundImage: `linear-gradient(rgba(11, 11, 15, 0.85), rgba(11, 11, 15, 0.85)), url('/imagine.jpg')`
+        backgroundImage: "linear-gradient(rgba(11, 11, 15, 0.85), rgba(11, 11, 15, 0.85)), url('/imagine.jpg')"
       }}
     >
       <TopBar />
 
       {/* MARKETPLACE */}
-      <main className="scroll-mt-24 max-w-7xl mx-auto px-4 sm:px-6 pt-16">
+      <main className="scroll-mt-24 max-w-7xl mx-auto px-4 sm:px-6 pt-16 scroll-blur-content">
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-tight">Piața — Toate Ofertele</h1>
@@ -144,40 +164,53 @@ export default function MarketplacePage() {
               distance: '432 km',
               estimatedTime: '5h 45m'
             })}
-            className="rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm p-5 hover:bg-black/50 transition cursor-pointer"
+            className="rounded-xl border border-white/10 bg-black/60 backdrop-blur-md hover:bg-black/70 transition cursor-pointer overflow-hidden"
           >
-            {/* Cargo Title */}
-            <div className="text-lg font-medium tracking-tight mb-3">Produse textile pentru export</div>
+            {/* Header cu punctele colorate */}
+            <div className="px-4 py-2 flex items-center justify-between border-b border-white/10 bg-black/40">
+              <div className="flex items-center gap-2">
+                <div className="h-2.5 w-2.5 rounded-full bg-red-500/80 ring-1 ring-red-400/60"></div>
+                <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/80 ring-1 ring-yellow-300/60"></div>
+                <div className="h-2.5 w-2.5 rounded-full bg-emerald-400/80 ring-1 ring-emerald-300/60"></div>
+              </div>
+              <div className="text-white/80 text-xs">cargo-001.json</div>
+            </div>
             
-            {/* Adresă: Țară + Oraș + Cod poștal */}
-            <div className="flex items-center gap-2 mb-2">
-              <MapPin className="h-4 w-4 text-white/50" />
-              <span className="text-sm text-white/70">RO, București, 100001 → RO, Cluj-Napoca, 400001</span>
-            </div>
+            {/* Content */}
+            <div className="p-5 bg-black/30">
+              {/* Cargo Title */}
+              <div className="text-lg font-medium tracking-tight mb-3">Produse textile pentru export</div>
+              
+              {/* Adresă: Țară + Oraș + Cod poștal */}
+              <div className="flex items-center gap-2 mb-2">
+                <MapPin className="h-4 w-4 text-white/50" />
+                <span className="text-sm text-white/70">RO, București, 100001 → RO, Cluj-Napoca, 400001</span>
+              </div>
 
-            {/* Info Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {/* Cargo Type */}
-              <div>
-                <span className="text-xs text-white/50">Cargo Type</span>
-                <div className="text-sm font-medium">General</div>
+              {/* Info Grid */}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {/* Cargo Type */}
+                <div>
+                  <span className="text-xs text-white/50">Cargo Type</span>
+                  <div className="text-sm font-medium">General</div>
+                </div>
+                {/* Weight */}
+                <div>
+                  <span className="text-xs text-white/50">Weight</span>
+                  <div className="text-sm font-medium">1200 kg</div>
+                </div>
               </div>
-              {/* Weight */}
-              <div>
-                <span className="text-xs text-white/50">Weight</span>
-                <div className="text-sm font-medium">1200 kg</div>
-              </div>
-            </div>
 
-            {/* Bottom Row: Preț + Nume Poster */}
-            <div className="flex items-center justify-between pt-3 border-t border-white/10">
-              <div>
-                <span className="text-xs text-white/50">Preț</span>
-                <div className="text-lg font-semibold text-emerald-300">€520</div>
-              </div>
-              <div className="text-right">
-                <span className="text-xs text-white/50">Poster</span>
-                <div className="text-sm font-medium">Alexandru Transport SRL</div>
+              {/* Bottom Row: Preț + Nume Poster */}
+              <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                <div>
+                  <span className="text-xs text-white/50">Preț</span>
+                  <div className="text-lg font-semibold text-emerald-300">€520</div>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs text-white/50">Poster</span>
+                  <div className="text-sm font-medium">Alexandru Transport SRL</div>
+                </div>
               </div>
             </div>
           </div>
@@ -200,40 +233,53 @@ export default function MarketplacePage() {
               distance: '156 km',
               estimatedTime: '2h 30m'
             })}
-            className="rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm p-5 hover:bg-black/50 transition cursor-pointer"
+            className="rounded-xl border border-white/10 bg-black/60 backdrop-blur-md hover:bg-black/70 transition cursor-pointer overflow-hidden"
           >
-            {/* Cargo Title */}
-            <div className="text-lg font-medium tracking-tight mb-3">Produse alimentare refrigerate</div>
+            {/* Header cu punctele colorate */}
+            <div className="px-4 py-2 flex items-center justify-between border-b border-white/10 bg-black/40">
+              <div className="flex items-center gap-2">
+                <div className="h-2.5 w-2.5 rounded-full bg-red-500/80 ring-1 ring-red-400/60"></div>
+                <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/80 ring-1 ring-yellow-300/60"></div>
+                <div className="h-2.5 w-2.5 rounded-full bg-emerald-400/80 ring-1 ring-emerald-300/60"></div>
+              </div>
+              <div className="text-white/80 text-xs">cargo-002.json</div>
+            </div>
             
-            {/* Adresă: Țară + Oraș + Cod poștal */}
-            <div className="flex items-center gap-2 mb-2">
-              <MapPin className="h-4 w-4 text-white/50" />
-              <span className="text-sm text-white/70">RO, Timișoara, 300001 → RO, Oradea, 410001</span>
-            </div>
+            {/* Content */}
+            <div className="p-5 bg-black/30">
+              {/* Cargo Title */}
+              <div className="text-lg font-medium tracking-tight mb-3">Produse alimentare refrigerate</div>
+              
+              {/* Adresă: Țară + Oraș + Cod poștal */}
+              <div className="flex items-center gap-2 mb-2">
+                <MapPin className="h-4 w-4 text-white/50" />
+                <span className="text-sm text-white/70">RO, Timișoara, 300001 → RO, Oradea, 410001</span>
+              </div>
 
-            {/* Info Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {/* Cargo Type */}
-              <div>
-                <span className="text-xs text-white/50">Cargo Type</span>
-                <div className="text-sm font-medium">Refrigerat</div>
+              {/* Info Grid */}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {/* Cargo Type */}
+                <div>
+                  <span className="text-xs text-white/50">Cargo Type</span>
+                  <div className="text-sm font-medium">Refrigerat</div>
+                </div>
+                {/* Weight */}
+                <div>
+                  <span className="text-xs text-white/50">Weight</span>
+                  <div className="text-sm font-medium">450 kg</div>
+                </div>
               </div>
-              {/* Weight */}
-              <div>
-                <span className="text-xs text-white/50">Weight</span>
-                <div className="text-sm font-medium">450 kg</div>
-              </div>
-            </div>
 
-            {/* Bottom Row: Preț + Nume Poster */}
-            <div className="flex items-center justify-between pt-3 border-t border-white/10">
-              <div>
-                <span className="text-xs text-white/50">Preț</span>
-                <div className="text-lg font-semibold text-emerald-300">€210</div>
-              </div>
-              <div className="text-right">
-                <span className="text-xs text-white/50">Poster</span>
-                <div className="text-sm font-medium">Fresh Food Express</div>
+              {/* Bottom Row: Preț + Nume Poster */}
+              <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                <div>
+                  <span className="text-xs text-white/50">Preț</span>
+                  <div className="text-lg font-semibold text-emerald-300">€210</div>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs text-white/50">Poster</span>
+                  <div className="text-sm font-medium">Fresh Food Express</div>
+                </div>
               </div>
             </div>
           </div>
@@ -256,10 +302,22 @@ export default function MarketplacePage() {
               distance: '298 km',
               estimatedTime: '4h 15m'
             })}
-            className="rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm p-5 hover:bg-black/50 transition cursor-pointer"
+            className="rounded-xl border border-white/10 bg-black/60 backdrop-blur-md hover:bg-black/70 transition cursor-pointer overflow-hidden"
           >
-            {/* Cargo Title */}
-            <div className="text-lg font-medium tracking-tight mb-3">Echipamente industriale</div>
+            {/* Header cu punctele colorate */}
+            <div className="px-4 py-2 flex items-center justify-between border-b border-white/10 bg-black/40">
+              <div className="flex items-center gap-2">
+                <div className="h-2.5 w-2.5 rounded-full bg-red-500/80 ring-1 ring-red-400/60"></div>
+                <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/80 ring-1 ring-yellow-300/60"></div>
+                <div className="h-2.5 w-2.5 rounded-full bg-emerald-400/80 ring-1 ring-emerald-300/60"></div>
+              </div>
+              <div className="text-white/80 text-xs">cargo-003.json</div>
+            </div>
+            
+            {/* Content */}
+            <div className="p-5 bg-black/30">
+              {/* Cargo Title */}
+              <div className="text-lg font-medium tracking-tight mb-3">Echipamente industriale</div>
             
             {/* Adresă: Țară + Oraș + Cod poștal */}
             <div className="flex items-center gap-2 mb-2">
@@ -292,8 +350,9 @@ export default function MarketplacePage() {
                 <div className="text-sm font-medium">Industrial Logistics Co</div>
               </div>
             </div>
-          </div>
-        </div>
+          </div>  {/* end of content */}
+        </div>  {/* end of Offer Card 3 */}
+        </div>  {/* end of grid */}
       </main>
 
 
@@ -399,16 +458,29 @@ export default function MarketplacePage() {
       {isFiltersOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setIsFiltersOpen(false)}></div>
-          <div className="relative bg-[#0E0E13] rounded-2xl border border-white/10 max-w-md w-full p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-medium">Filtre de Căutare</h3>
-              <button 
-                onClick={() => setIsFiltersOpen(false)}
-                className="h-8 w-8 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition flex items-center justify-center"
-              >
-                ×
-              </button>
-            </div>
+          <div className="relative max-w-md w-full">
+            <div className="rounded-xl border border-white/10 overflow-hidden bg-black/60 backdrop-blur-md">
+              {/* Editor Header */}
+              <div className="px-4 py-2 flex items-center justify-between border-b border-white/10 bg-black/40">
+                <div className="flex items-center">
+                  <div className="flex items-center gap-2 mr-4">
+                    <div className="h-2.5 w-2.5 rounded-full bg-red-500/80 ring-1 ring-red-400/60"></div>
+                    <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/80 ring-1 ring-yellow-300/60"></div>
+                    <div className="h-2.5 w-2.5 rounded-full bg-emerald-400/80 ring-1 ring-emerald-300/60"></div>
+                  </div>
+                  <div className="text-white/80 text-sm">filters-config.json</div>
+                </div>
+                <button 
+                  onClick={() => setIsFiltersOpen(false)}
+                  className="text-white/70 hover:text-white px-2 py-1 rounded border border-white/10 hover:bg-white/5 transition text-xs inline-flex items-center gap-1"
+                >
+                  <X className="h-3.5 w-3.5" /> Close
+                </button>
+              </div>
+              
+              {/* Content */}
+              <div className="p-6 bg-black/30">
+                <h3 className="text-lg font-medium mb-6">Filtre de Căutare</h3>
             
             <div className="space-y-4">
               {/* All Countries */}
@@ -481,19 +553,21 @@ export default function MarketplacePage() {
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
-              <button 
-                className="px-4 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition text-sm"
-              >
-                Clear
-              </button>
-              <button 
-                onClick={() => setIsFiltersOpen(false)}
-                className="px-6 py-2 rounded-lg border border-emerald-400/30 bg-emerald-400/15 hover:bg-emerald-400/20 text-emerald-300 transition text-sm"
-              >
-                Aplică Filtrele
-              </button>
+                {/* Actions */}
+                <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
+                  <button 
+                    className="px-4 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition text-sm"
+                  >
+                    Clear
+                  </button>
+                  <button 
+                    onClick={() => setIsFiltersOpen(false)}
+                    className="px-6 py-2 rounded-lg border border-emerald-400/30 bg-emerald-400/15 hover:bg-emerald-400/20 text-emerald-300 transition text-sm"
+                  >
+                    Aplică Filtrele
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

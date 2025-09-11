@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import TopBar from '@/components/TopBar'
 import HeroSection from '@/components/HeroSection'
 import QuickActions from '@/components/QuickActions'
@@ -11,13 +11,33 @@ import Link from 'next/link'
 
 export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
 
   const openModal = () => setIsModalOpen(true)
   const closeModal = () => setIsModalOpen(false)
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled = window.scrollY > 50
+      setIsScrolled(scrolled)
+      
+      const content = document.querySelector('.scroll-blur-content')
+      if (content) {
+        if (window.scrollY > 100) {
+          content.classList.add('scrolling')
+        } else {
+          content.classList.remove('scrolling')
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   return (
     <div 
-      className="min-h-screen bg-cover bg-center bg-fixed"
+      className={`min-h-screen bg-cover bg-center bg-fixed scroll-blur-container ${isScrolled ? 'scrolled' : ''}`}
       style={{
         backgroundImage: `linear-gradient(rgba(11, 11, 15, 0.85), rgba(11, 11, 15, 0.85)), url('/imagine.jpg')`
       }}
@@ -25,7 +45,7 @@ export default function HomePage() {
       <TopBar />
       
       {/* HOME */}
-      <main id="home" className="scroll-mt-20">
+      <main id="home" className="scroll-mt-20 scroll-blur-content">
         <HeroSection 
           onAddCargo={openModal}
           onFindLoads={() => window.location.href = '/marketplace'}
@@ -38,11 +58,18 @@ export default function HomePage() {
             onTrackShipments={() => window.location.href = '/marketplace'}
           />
           
-          <CodePreview />
+          <div className="mt-20">
+            <CodePreview />
+          </div>
         </div>
         
-        <HowItWorks />
-        <TestimonialSlider />
+        <div className="mt-32">
+          <HowItWorks />
+        </div>
+        
+        <div className="mt-32 mb-20">
+          <TestimonialSlider />
+        </div>
       </main>
 
 

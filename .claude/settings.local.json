@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Read(//mnt/d/CODEX/fleetopia/src/app/marketplace/**)",
-      "Read(//mnt/d/CODEX/fleetopia/src/**)"
+      "Read(//mnt/d/CODEX/fleetopia/src/**)",
+      "Read(//mnt/d/CODEX/fleetopia/**)"
     ],
     "deny": [],
     "ask": []
