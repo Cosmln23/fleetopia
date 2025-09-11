@@ -33,7 +33,8 @@ export default function SettingsPage() {
       className={'min-h-screen bg-cover bg-center bg-fixed scroll-blur-container' + (isScrolled ? ' scrolled' : '')}
       style={{
         backgroundImage:
-          "linear-gradient(rgba(11, 11, 15, 0.85), rgba(11, 11, 15, 0.85)), url('/imagine.jpg')",
+          "linear-gradient(rgba(11, 11, 15, 0.3), rgba(11, 11, 15, 0.7)), url('/wallpaper.jpg')",
+        filter: 'contrast(1.2) brightness(1.1)'
       }}
     >
       <TopBar />

@@ -1,45 +1,46 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import TopBar from '@/components/TopBar'
-import HeroSection from '@/components/HeroSection'
-import QuickActions from '@/components/QuickActions'
-import CodePreview from '@/components/CodePreview'
-import HowItWorks from '@/components/HowItWorks'
-import TestimonialSlider from '@/components/TestimonialSlider'
-import Link from 'next/link'
+import { useState, useEffect } from 'react';
+import TopBar from '@/components/TopBar';
+import HeroSection from '@/components/HeroSection';
+import QuickActions from '@/components/QuickActions';
+import CodePreview from '@/components/CodePreview';
+import HowItWorks from '@/components/HowItWorks';
+import TestimonialSlider from '@/components/TestimonialSlider';
+import Link from 'next/link';
 
 export default function HomePage() {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  const openModal = () => setIsModalOpen(true)
-  const closeModal = () => setIsModalOpen(false)
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrolled = window.scrollY > 50
-      setIsScrolled(scrolled)
+      const scrolled = window.scrollY > 50;
+      setIsScrolled(scrolled);
       
-      const content = document.querySelector('.scroll-blur-content')
+      const content = document.querySelector('.scroll-blur-content');
       if (content) {
         if (window.scrollY > 100) {
-          content.classList.add('scrolling')
+          content.classList.add('scrolling');
         } else {
-          content.classList.remove('scrolling')
+          content.classList.remove('scrolling');
         }
       }
-    }
+    };
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [])
 
   return (
     <div 
       className={`min-h-screen bg-cover bg-center bg-fixed scroll-blur-container ${isScrolled ? 'scrolled' : ''}`}
       style={{
-        backgroundImage: `linear-gradient(rgba(11, 11, 15, 0.85), rgba(11, 11, 15, 0.85)), url('/imagine.jpg')`
+        backgroundImage: `linear-gradient(rgba(11, 11, 15, 0.3), rgba(11, 11, 15, 0.7)), url('/wallpaper.jpg')`,
+        filter: 'contrast(1.2) brightness(1.1)'
       }}
     >
       <TopBar />
@@ -48,14 +49,14 @@ export default function HomePage() {
       <main id="home" className="scroll-mt-20 scroll-blur-content">
         <HeroSection 
           onAddCargo={openModal}
-          onFindLoads={() => window.location.href = '/marketplace'}
+          onFindLoads={() => { window.location.href = '/marketplace'; }}
         />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <QuickActions 
             onPostFast={openModal}
-            onFindLoads={() => window.location.href = '/marketplace'}
-            onTrackShipments={() => window.location.href = '/marketplace'}
+            onFindLoads={() => { window.location.href = '/marketplace'; }}
+            onTrackShipments={() => { window.location.href = '/marketplace'; }}
           />
           
           <div className="mt-20">
@@ -91,7 +92,7 @@ export default function HomePage() {
       {/* Add Cargo Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeModal}></div>
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeModal} />
           <div className="relative bg-[#0E0E13] rounded-2xl border border-white/10 p-6 max-w-md w-full">
             <h3 className="text-lg font-medium">Add Cargo Modal</h3>
             <p className="mt-2 text-white/60">Modal functionality will be implemented with backend integration.</p>
