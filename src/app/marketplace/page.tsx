@@ -3,6 +3,10 @@
 import { useState, useEffect } from 'react';
 import TopBar from '@/components/TopBar';
 import CursorSpotlight from '@/components/CursorSpotlight';
+import TabNavigation from '@/components/TabNavigation';
+import SearchBar from '@/components/SearchBar';
+import CargoFilters from '@/components/CargoFilters';
+import CargoCard from '@/components/CargoCard';
 import Link from 'next/link';
 import { SlidersHorizontal, MapPin, Eye, CheckCircle, Clock3, FileDown, Shield, Calendar, Truck, MessageCircle, Heart, X } from 'lucide-react';
 
@@ -11,6 +15,63 @@ export default function MarketplacePage() {
   const [isAddCargoOpen, setIsAddCargoOpen] = useState(false);
   const [selectedCargo, setSelectedCargo] = useState<any>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  
+  // New state for components
+  const [activeTab, setActiveTab] = useState('all-offers');
+  const [searchValue, setSearchValue] = useState('');
+  const [filters, setFilters] = useState({});
+
+  // Mock data pentru cargo cards
+  const mockCargos = [
+    {
+      id: 1,
+      title: 'Produse textile pentru export',
+      route: 'RO, București, 100001 → RO, Cluj-Napoca, 400001',
+      type: 'General',
+      weight: '1200 kg',
+      volume: '15.5 m³',
+      price: '€520',
+      poster: 'Alexandru Transport SRL',
+      verified: true,
+      urgency: 'Medium',
+      loadingDate: '2025-01-15',
+      deliveryDate: '2025-01-17',
+      distance: '432 km',
+      estimatedTime: '5h 45m'
+    },
+    {
+      id: 2,
+      title: 'Produse alimentare refrigerate',
+      route: 'RO, Timișoara, 300001 → RO, Oradea, 410001',
+      type: 'Refrigerat',
+      weight: '450 kg',
+      volume: '8.2 m³',
+      price: '€210',
+      poster: 'Fresh Food Express',
+      verified: false,
+      urgency: 'High',
+      loadingDate: '2025-01-12',
+      deliveryDate: '2025-01-13',
+      distance: '156 km',
+      estimatedTime: '2h 30m'
+    },
+    {
+      id: 3,
+      title: 'Echipamente industriale',
+      route: 'RO, Iași, 700001 → RO, Brașov, 500001',
+      type: 'Oversized',
+      weight: '800 kg',
+      volume: '22.1 m³',
+      price: '€430',
+      poster: 'Industrial Logistics Co',
+      verified: true,
+      urgency: 'Low',
+      loadingDate: '2025-01-20',
+      deliveryDate: '2025-01-22',
+      distance: '298 km',
+      estimatedTime: '4h 15m'
+    }
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,7 +90,7 @@ export default function MarketplacePage() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [])
+  }, []);
 
   return (
     <div 
@@ -51,23 +112,7 @@ export default function MarketplacePage() {
           {/* Tab Navigation + Action Buttons */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             {/* Tab Navigation */}
-            <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
-              <button className="px-3 sm:px-4 py-2 rounded-lg bg-emerald-400/15 text-emerald-300 border border-emerald-400/30 text-xs sm:text-sm font-medium whitespace-nowrap">
-                ALL OFFERS
-              </button>
-              <span className="text-white/30 mx-1 hidden sm:inline">|</span>
-              <button className="px-3 sm:px-4 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition text-xs sm:text-sm whitespace-nowrap">
-                MY CARGO
-              </button>
-              <span className="text-white/30 mx-1 hidden sm:inline">|</span>
-              <button className="px-3 sm:px-4 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition text-xs sm:text-sm whitespace-nowrap">
-                MY QUOTES
-              </button>
-              <span className="text-white/30 mx-1 hidden sm:inline">|</span>
-              <button className="px-3 sm:px-4 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition text-xs sm:text-sm whitespace-nowrap">
-                ACTIVE DEALS
-              </button>
-            </div>
+            <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
 
             {/* Action Buttons */}
             <div className="flex items-center gap-2">
@@ -85,275 +130,17 @@ export default function MarketplacePage() {
           </div>
 
           {/* Search Bar */}
-          <div className="w-full">
-            <input 
-              type="text" 
-              placeholder="Caută după destinație, tip cargo sau companie..."
-              className="w-full h-11 px-4 rounded-lg bg-white/[0.06] border border-white/10 placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 focus:border-cyan-400/30 text-sm"
-            />
-          </div>
+          <SearchBar value={searchValue} onChange={setSearchValue} />
 
           {/* Filters Row */}
-          <div className="flex flex-wrap items-center gap-3">
-            <select className="h-9 px-3 rounded-lg bg-white/[0.06] border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 text-sm">
-              <option>All Countries</option>
-              <option>România</option>
-              <option>Germania</option>
-              <option>Franța</option>
-              <option>Italia</option>
-            </select>
-            
-            <select className="h-9 px-3 rounded-lg bg-white/[0.06] border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 text-sm">
-              <option>Newest First</option>
-              <option>Oldest First</option>
-              <option>Price: Low to High</option>
-              <option>Price: High to Low</option>
-              <option>Distance: Near to Far</option>
-            </select>
-            
-            <select className="h-9 px-3 rounded-lg bg-white/[0.06] border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 text-sm">
-              <option>All Types</option>
-              <option>General</option>
-              <option>Fragile</option>
-              <option>Refrigerat</option>
-              <option>Lichid</option>
-              <option>Oversized</option>
-            </select>
-            
-            <select className="h-9 px-3 rounded-lg bg-white/[0.06] border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 text-sm">
-              <option>All Urgency</option>
-              <option>Low</option>
-              <option>Medium</option>
-              <option>High</option>
-              <option>Urgent</option>
-            </select>
-            
-            <input 
-              type="number" 
-              placeholder="Min (€)"
-              className="w-24 h-9 px-3 rounded-lg bg-white/[0.06] border border-white/10 placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 text-sm"
-            />
-            
-            <input 
-              type="number" 
-              placeholder="Max (€)"
-              className="w-24 h-9 px-3 rounded-lg bg-white/[0.06] border border-white/10 placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 text-sm"
-            />
-            
-            <button className="h-9 px-3 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition text-sm">
-              Clear
-            </button>
-          </div>
+          <CargoFilters filters={filters} onFiltersChange={setFilters} />
         </div>
 
         {/* Offers grid */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {/* Offer Card 1 */}
-          <div 
-            onClick={() => setSelectedCargo({
-              id: 1,
-              title: 'Produse textile pentru export',
-              route: 'RO, București, 100001 → RO, Cluj-Napoca, 400001',
-              type: 'General',
-              weight: '1200 kg',
-              volume: '15.5 m³',
-              price: '€520',
-              poster: 'Alexandru Transport SRL',
-              verified: true,
-              urgency: 'Medium',
-              loadingDate: '2025-01-15',
-              deliveryDate: '2025-01-17',
-              distance: '432 km',
-              estimatedTime: '5h 45m'
-            })}
-            className="rounded-xl border border-white/10 bg-black/60 backdrop-blur-md hover:bg-black/70 transition cursor-pointer overflow-hidden"
-          >
-            {/* Header cu punctele colorate */}
-            <div className="px-4 py-2 flex items-center justify-between border-b border-white/10 bg-black/40">
-              <div className="flex items-center gap-2">
-                <div className="h-2.5 w-2.5 rounded-full bg-red-500/80 ring-1 ring-red-400/60" />
-                <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/80 ring-1 ring-yellow-300/60" />
-                <div className="h-2.5 w-2.5 rounded-full bg-emerald-400/80 ring-1 ring-emerald-300/60" />
-              </div>
-              <div className="text-white/80 text-xs">cargo-001.json</div>
-            </div>
-            
-            {/* Content */}
-            <div className="p-5 bg-black/30">
-              {/* Cargo Title */}
-              <div className="text-lg font-medium tracking-tight mb-3">Produse textile pentru export</div>
-              
-              {/* Adresă: Țară + Oraș + Cod poștal */}
-              <div className="flex items-center gap-2 mb-2">
-                <MapPin className="h-4 w-4 text-white/50" />
-                <span className="text-sm text-white/70">RO, București, 100001 → RO, Cluj-Napoca, 400001</span>
-              </div>
-
-              {/* Info Grid */}
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                {/* Cargo Type */}
-                <div>
-                  <span className="text-xs text-white/50">Cargo Type</span>
-                  <div className="text-sm font-medium">General</div>
-                </div>
-                {/* Weight */}
-                <div>
-                  <span className="text-xs text-white/50">Weight</span>
-                  <div className="text-sm font-medium">1200 kg</div>
-                </div>
-              </div>
-
-              {/* Bottom Row: Preț + Nume Poster */}
-              <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                <div>
-                  <span className="text-xs text-white/50">Preț</span>
-                  <div className="text-lg font-semibold text-emerald-300">€520</div>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs text-white/50">Poster</span>
-                  <div className="text-sm font-medium">Alexandru Transport SRL</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Offer Card 2 */}
-          <div 
-            onClick={() => setSelectedCargo({
-              id: 2,
-              title: 'Produse alimentare refrigerate',
-              route: 'RO, Timișoara, 300001 → RO, Oradea, 410001',
-              type: 'Refrigerat',
-              weight: '450 kg',
-              volume: '8.2 m³',
-              price: '€210',
-              poster: 'Fresh Food Express',
-              verified: false,
-              urgency: 'High',
-              loadingDate: '2025-01-12',
-              deliveryDate: '2025-01-13',
-              distance: '156 km',
-              estimatedTime: '2h 30m'
-            })}
-            className="rounded-xl border border-white/10 bg-black/60 backdrop-blur-md hover:bg-black/70 transition cursor-pointer overflow-hidden"
-          >
-            {/* Header cu punctele colorate */}
-            <div className="px-4 py-2 flex items-center justify-between border-b border-white/10 bg-black/40">
-              <div className="flex items-center gap-2">
-                <div className="h-2.5 w-2.5 rounded-full bg-red-500/80 ring-1 ring-red-400/60" />
-                <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/80 ring-1 ring-yellow-300/60" />
-                <div className="h-2.5 w-2.5 rounded-full bg-emerald-400/80 ring-1 ring-emerald-300/60" />
-              </div>
-              <div className="text-white/80 text-xs">cargo-002.json</div>
-            </div>
-            
-            {/* Content */}
-            <div className="p-5 bg-black/30">
-              {/* Cargo Title */}
-              <div className="text-lg font-medium tracking-tight mb-3">Produse alimentare refrigerate</div>
-              
-              {/* Adresă: Țară + Oraș + Cod poștal */}
-              <div className="flex items-center gap-2 mb-2">
-                <MapPin className="h-4 w-4 text-white/50" />
-                <span className="text-sm text-white/70">RO, Timișoara, 300001 → RO, Oradea, 410001</span>
-              </div>
-
-              {/* Info Grid */}
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                {/* Cargo Type */}
-                <div>
-                  <span className="text-xs text-white/50">Cargo Type</span>
-                  <div className="text-sm font-medium">Refrigerat</div>
-                </div>
-                {/* Weight */}
-                <div>
-                  <span className="text-xs text-white/50">Weight</span>
-                  <div className="text-sm font-medium">450 kg</div>
-                </div>
-              </div>
-
-              {/* Bottom Row: Preț + Nume Poster */}
-              <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                <div>
-                  <span className="text-xs text-white/50">Preț</span>
-                  <div className="text-lg font-semibold text-emerald-300">€210</div>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs text-white/50">Poster</span>
-                  <div className="text-sm font-medium">Fresh Food Express</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Offer Card 3 */}
-          <div 
-            onClick={() => setSelectedCargo({
-              id: 3,
-              title: 'Echipamente industriale',
-              route: 'RO, Iași, 700001 → RO, Brașov, 500001',
-              type: 'Oversized',
-              weight: '800 kg',
-              volume: '22.1 m³',
-              price: '€430',
-              poster: 'Industrial Logistics Co',
-              verified: true,
-              urgency: 'Low',
-              loadingDate: '2025-01-20',
-              deliveryDate: '2025-01-22',
-              distance: '298 km',
-              estimatedTime: '4h 15m'
-            })}
-            className="rounded-xl border border-white/10 bg-black/60 backdrop-blur-md hover:bg-black/70 transition cursor-pointer overflow-hidden"
-          >
-            {/* Header cu punctele colorate */}
-            <div className="px-4 py-2 flex items-center justify-between border-b border-white/10 bg-black/40">
-              <div className="flex items-center gap-2">
-                <div className="h-2.5 w-2.5 rounded-full bg-red-500/80 ring-1 ring-red-400/60" />
-                <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/80 ring-1 ring-yellow-300/60" />
-                <div className="h-2.5 w-2.5 rounded-full bg-emerald-400/80 ring-1 ring-emerald-300/60" />
-              </div>
-              <div className="text-white/80 text-xs">cargo-003.json</div>
-            </div>
-            
-            {/* Content */}
-            <div className="p-5 bg-black/30">
-              {/* Cargo Title */}
-              <div className="text-lg font-medium tracking-tight mb-3">Echipamente industriale</div>
-            
-            {/* Adresă: Țară + Oraș + Cod poștal */}
-            <div className="flex items-center gap-2 mb-2">
-              <MapPin className="h-4 w-4 text-white/50" />
-              <span className="text-sm text-white/70">RO, Iași, 700001 → RO, Brașov, 500001</span>
-            </div>
-
-            {/* Info Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {/* Cargo Type */}
-              <div>
-                <span className="text-xs text-white/50">Cargo Type</span>
-                <div className="text-sm font-medium">Oversized</div>
-              </div>
-              {/* Weight */}
-              <div>
-                <span className="text-xs text-white/50">Weight</span>
-                <div className="text-sm font-medium">800 kg</div>
-              </div>
-            </div>
-
-            {/* Bottom Row: Preț + Nume Poster */}
-            <div className="flex items-center justify-between pt-3 border-t border-white/10">
-              <div>
-                <span className="text-xs text-white/50">Preț</span>
-                <div className="text-lg font-semibold text-emerald-300">€430</div>
-              </div>
-              <div className="text-right">
-                <span className="text-xs text-white/50">Poster</span>
-                <div className="text-sm font-medium">Industrial Logistics Co</div>
-              </div>
-            </div>
-          </div>
-        </div>
+          {mockCargos.map((cargo) => (
+            <CargoCard key={cargo.id} cargo={cargo} onClick={setSelectedCargo} />
+          ))}
         </div>
       </main>
 

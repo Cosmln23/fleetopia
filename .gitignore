@@ -37,4 +37,5 @@ Thumbs.db
 
 /generated/prisma
 
-/generated/prisma
+# Windows reserved filename
+/nul
