@@ -24,5 +24,8 @@ Un proiect Next.js 14 (App Router) pentru marketplace de transport marfă.
 ## Notă
 Acest repo urmează planul din `Plan.MD`. Orice secțiune marcată ca EXTRAS/EXTRASE în `Plan.MD` nu este parte din livrarea curentă.
 
+## ⚠️ FOARTE IMPORTANT
+**Citiți obligatoriu `Agent_Rules.md` înainte de orice colaborare cu AI agents pe acest proiect!**
+
 ## Repo GitHub
 Repo public: `https://github.com/Cosmln23/Fleetopia.git`

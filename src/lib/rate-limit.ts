@@ -1,142 +1,143 @@
-import { Ratelimit } from '@upstash/ratelimit';
-import { Redis } from '@upstash/redis';
-import { NextRequest } from 'next/server';
-import { rateLimitResponse } from './api-utils';
+// src/lib/rate-limit.ts
+import { NextRequest, NextResponse } from 'next/server';
 
-// Create Redis instance for rate limiting
-// For development, we'll use a memory store
-// In production, you should configure UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN
-const redis = process.env.UPSTASH_REDIS_REST_URL
-  ? new Redis({
+// ===== Config =====
+const DISABLE_IN_DEV = process.env.ENABLE_RATE_LIMIT === '1' ? false : true;
+
+// dacă vrei să forțezi rate-limit și în dev, pune ENABLE_RATE_LIMIT=1 în .env.local
+// producție: lasă ENABLE_RATE_LIMIT nedefinit și configurează Upstash dacă vrei.
+
+// ===== Interfața comună =====
+type LimitResult = {
+  success: boolean;
+  limit: number;
+  remaining: number;
+  reset: number; // ms epoch
+};
+
+interface Limiter {
+  limit(key: string): Promise<LimitResult>;
+}
+
+// ===== Implementare memorie (dev & fallback) =====
+class MemoryLimiter implements Limiter {
+  private store = new Map<string, { count: number; resetAt: number }>();
+
+  constructor(private max: number, private windowMs: number) {}
+
+  async limit(key: string): Promise<LimitResult> {
+    const now = Date.now();
+    const entry = this.store.get(key);
+
+    if (!entry || entry.resetAt <= now) {
+      this.store.set(key, { count: 1, resetAt: now + this.windowMs });
+      return { success: true, limit: this.max, remaining: this.max - 1, reset: now + this.windowMs };
+    }
+
+    if (entry.count < this.max) {
+      entry.count += 1;
+      return { success: true, limit: this.max, remaining: this.max - entry.count, reset: entry.resetAt };
+    }
+
+    return { success: false, limit: this.max, remaining: 0, reset: entry.resetAt };
+  }
+}
+
+// ===== (Opțional) Upstash în producție =====
+// NOTE: folosește doar dacă ai setat UPSTASH_REDIS_REST_URL și UPSTASH_REDIS_REST_TOKEN
+let useUpstash = false;
+let UpstashLimiterFactory: ((max: number, windowMs: number) => Limiter) | null = null;
+
+if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN && process.env.NODE_ENV === 'production') {
+  try {
+    // Lazy require ca să nu crape în dev
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { Ratelimit } = require('@upstash/ratelimit');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { Redis } = require('@upstash/redis');
+
+    const redis = new Redis({
       url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-    })
-  : undefined;
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
 
-// Rate limiting configurations
+    UpstashLimiterFactory = (max: number, windowMs: number): Limiter => {
+      const rl = new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(max, `${Math.ceil(windowMs / 1000)} s`),
+        analytics: true,
+        prefix: 'ratelimit',
+      });
+
+      return {
+        async limit(key: string): Promise<LimitResult> {
+          const r = await rl.limit(key);
+          return { success: r.success, limit: r.limit, remaining: r.remaining, reset: r.reset };
+        },
+      };
+    };
+
+    useUpstash = true;
+  } catch {
+    useUpstash = false;
+  }
+}
+
+// ===== Instanțe =====
+function makeLimiter(max: number, windowMs: number): Limiter {
+  if (useUpstash && UpstashLimiterFactory) return UpstashLimiterFactory(max, windowMs);
+  return new MemoryLimiter(max, windowMs);
+}
+
 const rateLimiters = {
-  // General API rate limit - 100 requests per minute
-  api: new Ratelimit({
-    redis: redis as any || new Map(), // Type assertion for development fallback
-    limiter: Ratelimit.slidingWindow(100, '1 m'),
-    analytics: true,
-    prefix: 'ratelimit:api',
-  }),
-
-  // Authentication endpoints - 10 requests per minute
-  auth: new Ratelimit({
-    redis: redis as any || new Map(),
-    limiter: Ratelimit.slidingWindow(10, '1 m'),
-    analytics: true,
-    prefix: 'ratelimit:auth',
-  }),
-
-  // Search/marketplace endpoints - 200 requests per minute  
-  search: new Ratelimit({
-    redis: redis as any || new Map(),
-    limiter: Ratelimit.slidingWindow(200, '1 m'),
-    analytics: true,
-    prefix: 'ratelimit:search',
-  }),
-
-  // Cargo creation - 20 requests per hour
-  cargo: new Ratelimit({
-    redis: redis as any || new Map(),
-    limiter: Ratelimit.slidingWindow(20, '1 h'),
-    analytics: true,
-    prefix: 'ratelimit:cargo',
-  }),
-
-  // Quote submission - 50 requests per hour
-  quotes: new Ratelimit({
-    redis: redis as any || new Map(),
-    limiter: Ratelimit.slidingWindow(50, '1 h'),
-    analytics: true,
-    prefix: 'ratelimit:quotes',
-  }),
-
-  // Chat messages - 500 requests per hour
-  chat: new Ratelimit({
-    redis: redis as any || new Map(),
-    limiter: Ratelimit.slidingWindow(500, '1 h'),
-    analytics: true,
-    prefix: 'ratelimit:chat',
-  }),
+  api: makeLimiter(100, 60_000),        // 100 / 1m
+  auth: makeLimiter(10, 60_000),        // 10 / 1m
+  search: makeLimiter(200, 60_000),     // 200 / 1m
+  cargo: makeLimiter(20, 60 * 60_000),  // 20 / 1h
+  quotes: makeLimiter(50, 60 * 60_000), // 50 / 1h
+  chat: makeLimiter(500, 60 * 60_000),  // 500 / 1h
 };
 
 export type RateLimitType = keyof typeof rateLimiters;
 
-export async function checkRateLimit(
-  request: NextRequest,
-  type: RateLimitType = 'api'
-) {
-  const rateLimiter = rateLimiters[type];
-  
-  // Get identifier - use user ID if authenticated, otherwise IP
-  const userId = request.headers.get('x-user-id'); // Set by Clerk middleware
-  const ip = request.ip || request.headers.get('x-forwarded-for') || '127.0.0.1';
-  const identifier = userId || ip;
+function clientId(req: NextRequest) {
+  // IP simplu; ajustează dacă folosești proxy/CDN
+  const xff = req.headers.get('x-forwarded-for');
+  const ip = xff?.split(',')[0]?.trim() || (req as any).ip || 'anon';
+  return ip;
+}
 
-  const { success, limit, remaining, reset } = await rateLimiter.limit(identifier);
+export async function checkRateLimit(req: NextRequest, type: RateLimitType = 'api') {
+  // dezactivat implicit în dev (dacă nu setezi ENABLE_RATE_LIMIT=1)
+  if (process.env.NODE_ENV === 'development' && DISABLE_IN_DEV) {
+    return { success: true, headers: new Headers() as Headers, response: undefined as NextResponse | undefined };
+  }
 
-  // Add rate limit headers to response
-  const headers = new Headers();
-  headers.set('X-RateLimit-Limit', limit.toString());
-  headers.set('X-RateLimit-Remaining', remaining.toString());
-  headers.set('X-RateLimit-Reset', new Date(reset).toISOString());
+  const limiter = rateLimiters[type];
+  if (!limiter || typeof limiter.limit !== 'function') {
+    // protecție suplimentară: nu mai lăsăm să crape rutele
+    return { success: true, headers: new Headers(), response: undefined };
+  }
 
-  if (!success) {
-    return { 
-      success: false, 
-      response: rateLimitResponse('Rate limit exceeded. Please try again later.')
+  const id = `${type}:${clientId(req)}`;
+  const res = await limiter.limit(id);
+
+  const headers = new Headers({
+    'X-RateLimit-Limit': String(res.limit),
+    'X-RateLimit-Remaining': String(res.remaining),
+    'X-RateLimit-Reset': String(Math.ceil(res.reset / 1000)), // secunde epoch
+  });
+
+  if (!res.success) {
+    return {
+      success: false,
+      headers,
+      response: new NextResponse(
+        JSON.stringify({ success: false, error: 'Too many requests', reset: res.reset }),
+        { status: 429, headers }
+      ),
     };
   }
 
-  return { success: true, headers };
-}
-
-export function withRateLimit(type: RateLimitType = 'api') {
-  return function rateLimitDecorator(
-    target: any,
-    propertyName: string,
-    descriptor: PropertyDescriptor
-  ) {
-    const method = descriptor.value;
-
-    descriptor.value = async function (request: NextRequest, ...args: any[]) {
-      const rateLimitResult = await checkRateLimit(request, type);
-      
-      if (!rateLimitResult.success) {
-        return (rateLimitResult as any).response;
-      }
-
-      const response = await method.apply(this, [request, ...args]);
-      
-      // Add rate limit headers to successful responses
-      if (response instanceof Response && rateLimitResult.headers) {
-        rateLimitResult.headers.forEach((value, key) => {
-          response.headers.set(key, value);
-        });
-      }
-
-      return response;
-    };
-
-    return descriptor;
-  };
-}
-
-// Helper function to get rate limit info without consuming a request
-export async function getRateLimitInfo(
-  request: NextRequest,
-  type: RateLimitType = 'api'
-) {
-  const rateLimiter = rateLimiters[type];
-  const userId = request.headers.get('x-user-id');
-  const ip = request.ip || request.headers.get('x-forwarded-for') || '127.0.0.1';
-  const identifier = userId || ip;
-
-  // This doesn't consume a request, just gets info
-  const result = await rateLimiter.getRemaining(identifier);
-  return result;
+  return { success: true, headers, response: undefined };
 }

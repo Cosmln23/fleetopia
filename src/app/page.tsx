@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
 import TopBar from '@/components/TopBar';
 import HeroSection from '@/components/HeroSection';
 import QuickActions from '@/components/QuickActions';
@@ -8,14 +9,26 @@ import CodePreview from '@/components/CodePreview';
 import HowItWorks from '@/components/HowItWorks';
 import TestimonialSlider from '@/components/TestimonialSlider';
 import CursorSpotlight from '@/components/CursorSpotlight';
+import PostCargoModal from '@/components/PostCargoModal';
 import Link from 'next/link';
 
 export default function HomePage() {
+  const { isSignedIn } = useUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showAuthWarning, setShowAuthWarning] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+  
+  const handleMarketplaceAccess = () => {
+    if (isSignedIn) {
+      window.location.href = '/marketplace';
+    } else {
+      setShowAuthWarning(true);
+      setTimeout(() => setShowAuthWarning(false), 4000); // Auto-hide after 4s
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -49,8 +62,8 @@ export default function HomePage() {
       {/* HOME */}
       <main id="home" className="scroll-mt-20 scroll-blur-content">
         <HeroSection 
-          onAddCargo={openModal}
-          onFindLoads={() => { window.location.href = '/marketplace'; }}
+          onAddCargo={handleMarketplaceAccess}
+          onFindLoads={handleMarketplaceAccess}
         />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -90,22 +103,35 @@ export default function HomePage() {
         </div>
       </footer>
 
-      {/* Add Cargo Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={closeModal} />
-          <div className="relative bg-[#0E0E13] rounded-2xl border border-white/10 p-6 max-w-md w-full">
-            <h3 className="text-lg font-medium">Add Cargo Modal</h3>
-            <p className="mt-2 text-white/60">Modal functionality will be implemented with backend integration.</p>
-            <button 
-              onClick={closeModal}
-              className="mt-4 px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition"
-            >
-              Close
-            </button>
+      {/* Auth Warning */}
+      {showAuthWarning && (
+        <div className="fixed bottom-4 right-4 z-50 max-w-sm">
+          <div className="bg-gradient-to-r from-amber-500/90 to-orange-500/90 backdrop-blur-sm text-white p-4 rounded-lg shadow-lg border border-amber-400/20">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5">
+                <svg className="h-5 w-5 text-amber-200" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h4 className="font-medium text-sm">Acces restricționat</h4>
+                <p className="text-xs text-amber-100 mt-1">Pentru a accesa marketplace-ul, trebuie să te conectezi sau să îți creezi un cont.</p>
+                <div className="flex gap-2 mt-2">
+                  <button 
+                    onClick={() => setShowAuthWarning(false)}
+                    className="text-xs bg-white/20 hover:bg-white/30 px-2 py-1 rounded transition"
+                  >
+                    Am înțeles
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
+
+      {/* Post Cargo Modal */}
+      <PostCargoModal isOpen={isModalOpen} onClose={closeModal} />
       
       <CursorSpotlight intensity="subtle" size={275} />
     </div>

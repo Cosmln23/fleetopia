@@ -6,7 +6,9 @@
       "Read(//mnt/d/CODEX/fleetopia/**)",
       "Bash(npm install:*)",
       "Bash(npx prisma init:*)",
-      "Bash(npm run prisma:push:*)"
+      "Bash(npm run prisma:push:*)",
+      "Bash(if exist \".next\\static\" rmdir /s /q \".next\\static\")",
+      "Bash(if exist \".next\\server\" rmdir /s /q \".next\\server\")"
     ],
     "deny": [],
     "ask": []

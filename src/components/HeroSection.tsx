@@ -22,7 +22,9 @@ export default function HeroSection({ onAddCargo, onFindLoads }: HeroSectionProp
       {/* Primary choices */}
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         <button 
-          onClick={onAddCargo}
+          type="button"
+          onClick={(e) => { e.preventDefault(); onAddCargo(); }}
+          data-testid="cta-post-cargo"
           className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.02] hover:from-white/[0.08] hover:to-white/[0.04] transition"
         >
           <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-cyan-400/10 via-transparent to-transparent"></div>
@@ -41,7 +43,8 @@ export default function HeroSection({ onAddCargo, onFindLoads }: HeroSectionProp
         </button>
 
         <button 
-          onClick={onFindLoads}
+          type="button"
+          onClick={(e) => { e.preventDefault(); onFindLoads(); }}
           className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.02] hover:from-white/[0.08] hover:to-white/[0.04] transition"
         >
           <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-emerald-400/10 via-transparent to-transparent"></div>
