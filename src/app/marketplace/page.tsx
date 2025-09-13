@@ -558,11 +558,11 @@ export default function MarketplacePage() {
                     </button>
                     <button 
                       onClick={() => {
+                        // Import and use Zustand store
+                        import('@/stores/chatStore').then(({ useChatStore }) => {
+                          useChatStore.getState().openChat(selectedCargo.id, selectedCargo.title)
+                        })
                         setSelectedCargo(null)
-                        // TODO: Open chat only if user has active quotes with this cargo
-                        window.dispatchEvent(new CustomEvent('openChat', { 
-                          detail: { cargoId: selectedCargo.id, cargoTitle: selectedCargo.title }
-                        }))
                       }}
                       className="h-10 px-4 rounded-lg border border-cyan-400/30 bg-cyan-400/15 hover:bg-cyan-400/20 text-cyan-200 transition text-sm flex items-center justify-center gap-2"
                     >

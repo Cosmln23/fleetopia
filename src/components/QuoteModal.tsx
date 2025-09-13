@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { X, Euro, MessageCircle, CheckCircle, MessageSquare } from 'lucide-react'
+import { useChatActions } from '@/stores/chatStore'
 
 interface CargoData {
   id: string
@@ -28,6 +29,7 @@ interface QuoteModalProps {
 }
 
 export default function QuoteModal({ isOpen, onClose, cargo, onQuoteSubmitted }: QuoteModalProps) {
+  const { openChat } = useChatActions()
   const [price, setPrice] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -65,6 +67,7 @@ export default function QuoteModal({ isOpen, onClose, cargo, onQuoteSubmitted }:
 
       setSuccess(true)
       setQuoteId(result.data?.quote?.id || 'unknown')
+      
       onQuoteSubmitted?.()
 
     } catch (err) {
@@ -84,13 +87,9 @@ export default function QuoteModal({ isOpen, onClose, cargo, onQuoteSubmitted }:
   }
 
   const handleChat = () => {
-    // TODO: Trigger chat opening in ChatWidget
-    // For now, close modal and let user use ChatWidget
+    // Use Zustand store to open chat
+    openChat(cargo.id, cargo.title)
     handleClose()
-    // Trigger a custom event to open ChatWidget
-    window.dispatchEvent(new CustomEvent('openChat', { 
-      detail: { cargoId: cargo.id, cargoTitle: cargo.title }
-    }))
   }
 
   return (

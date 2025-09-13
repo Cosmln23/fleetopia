@@ -20,7 +20,12 @@
       "Bash(curl:*)",
       "Bash(npx next build:*)",
       "Bash(./node_modules/.bin/prisma:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(node server.js)",
+      "Bash(NODE_ENV=development node server.js)",
+      "Bash(npm uninstall:*)",
+      "Bash(./node_modules/.bin/tsc:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []
