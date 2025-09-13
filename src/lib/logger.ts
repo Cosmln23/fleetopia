@@ -162,8 +162,8 @@ export async function measureTime<T>(
 }
 
 // Middleware helper for API logging
-export function createApiLogger(handler: Function) {
-  return async (request: Request, ...args: any[]) => {
+export function createApiLogger(handler: (...args: unknown[]) => unknown) {
+  return async (request: Request, ...args: unknown[]) => {
     const start = Date.now();
     const method = request.method;
     const url = new URL(request.url).pathname;

@@ -51,9 +51,9 @@ let UpstashLimiterFactory: ((max: number, windowMs: number) => Limiter) | null =
 if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN && process.env.NODE_ENV === 'production') {
   try {
     // Lazy require ca să nu crape în dev
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { Ratelimit } = require('@upstash/ratelimit');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { Redis } = require('@upstash/redis');
 
     const redis = new Redis({
