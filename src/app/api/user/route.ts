@@ -25,26 +25,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ user: existingUser });
     }
 
-    // Create Stripe customer
-    const stripeCustomer = await stripe.customers.create({
-      email: email,
-      name: firstName && lastName ? `${firstName} ${lastName}` : undefined,
-      metadata: {
-        clerkUserId: userId
+    // Create Stripe customer if available
+    let stripeCustomerId = null;
+    if (stripe) {
+      try {
+        const stripeCustomer = await stripe.customers.create({
+          email: email,
+          name: firstName && lastName ? `${firstName} ${lastName}` : undefined,
+          metadata: {
+            clerkUserId: userId
+          }
+        });
+        stripeCustomerId = stripeCustomer.id;
+      } catch (error) {
+        console.warn('Failed to create Stripe customer:', error);
       }
-    });
+    }
 
     // Create user in database
     const user = await prisma.user.create({
       data: {
         id: userId,
-        stripeCustomerId: stripeCustomer.id,
+        stripeCustomerId: stripeCustomerId,
         role: 'Trial',
         firstLogin: true
       }
     });
 
-    return NextResponse.json({ user, stripeCustomer: { id: stripeCustomer.id } });
+    return NextResponse.json({ user, stripeCustomer: stripeCustomerId ? { id: stripeCustomerId } : null });
 
   } catch (error) {
     console.error('Error creating user:', error);
