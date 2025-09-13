@@ -11,7 +11,7 @@ import CargoCard from '@/components/CargoCard';
 import PostCargoModal from '@/components/PostCargoModal';
 import QuoteModal from '@/components/QuoteModal';
 import Link from 'next/link';
-import { SlidersHorizontal, MapPin, Eye, CheckCircle, Clock3, FileDown, Shield, Calendar, Truck, MessageCircle, Heart, X, Loader2, Package, User, Scale } from 'lucide-react';
+import { SlidersHorizontal, MapPin, Eye, CheckCircle, Clock3, FileDown, Shield, Calendar, Truck, MessageCircle, Heart, X, Loader2, Package, User, Scale, Edit, Trash2 } from 'lucide-react';
 
 export default function MarketplacePage() {
   const { user, isLoaded } = useUser();
@@ -53,6 +53,7 @@ export default function MarketplacePage() {
       // Transform API data to match CargoCard interface
       const transformedCargos = (result.data?.cargos || []).map((cargo: any) => ({
         id: cargo.id,
+        userId: cargo.userId,
         title: cargo.title,
         route: `${cargo.pickup.country}, ${cargo.pickup.city} → ${cargo.delivery.country}, ${cargo.delivery.city}`,
         type: cargo.cargoType,
@@ -534,18 +535,42 @@ export default function MarketplacePage() {
 
               {/* Action Buttons */}
               <div className="p-4 border-t border-white/10 bg-black/20">
-                <div className="grid grid-cols-2 gap-3">
-                  <button 
-                    onClick={() => setIsQuoteModalOpen(true)}
-                    className="h-10 px-4 rounded-lg border border-emerald-400/30 bg-emerald-400/15 hover:bg-emerald-400/20 text-emerald-300 transition text-sm font-medium"
-                  >
-                    Trimite Ofertă
-                  </button>
-                  <button className="h-10 px-4 rounded-lg border border-cyan-400/30 bg-cyan-400/15 hover:bg-cyan-400/20 text-cyan-200 transition text-sm flex items-center justify-center gap-2">
-                    <MessageCircle className="h-4 w-4" />
-                    Chat
-                  </button>
-                </div>
+                {selectedCargo?.userId === user?.id ? (
+                  // Owner buttons - Edit/Delete
+                  <div className="grid grid-cols-2 gap-3">
+                    <button className="h-10 px-4 rounded-lg border border-blue-400/30 bg-blue-400/15 hover:bg-blue-400/20 text-blue-300 transition text-sm flex items-center justify-center gap-2">
+                      <Edit className="h-4 w-4" />
+                      Edit
+                    </button>
+                    <button className="h-10 px-4 rounded-lg border border-red-400/30 bg-red-400/15 hover:bg-red-400/20 text-red-300 transition text-sm flex items-center justify-center gap-2">
+                      <Trash2 className="h-4 w-4" />
+                      Delete
+                    </button>
+                  </div>
+                ) : (
+                  // Non-owner buttons - Quote/Chat
+                  <div className="grid grid-cols-2 gap-3">
+                    <button 
+                      onClick={() => setIsQuoteModalOpen(true)}
+                      className="h-10 px-4 rounded-lg border border-emerald-400/30 bg-emerald-400/15 hover:bg-emerald-400/20 text-emerald-300 transition text-sm font-medium"
+                    >
+                      Trimite Ofertă
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setSelectedCargo(null)
+                        // TODO: Open chat only if user has active quotes with this cargo
+                        window.dispatchEvent(new CustomEvent('openChat', { 
+                          detail: { cargoId: selectedCargo.id, cargoTitle: selectedCargo.title }
+                        }))
+                      }}
+                      className="h-10 px-4 rounded-lg border border-cyan-400/30 bg-cyan-400/15 hover:bg-cyan-400/20 text-cyan-200 transition text-sm flex items-center justify-center gap-2"
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                      Chat
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

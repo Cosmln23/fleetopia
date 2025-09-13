@@ -19,12 +19,33 @@ export default function ChatWidget() {
       }
     }
 
+    const handleOpenChat = (event: CustomEvent) => {
+      const { cargoId, cargoTitle } = event.detail
+      console.log('Opening chat for cargo:', cargoId, cargoTitle)
+      
+      // Create a new contact based on cargo info
+      const newContact = {
+        id: cargoId,
+        name: `Chat despre: ${cargoTitle}`,
+        avatar: 'CG',
+        color: 'bg-cyan-400/15 border-cyan-400/30 text-cyan-300'
+      }
+      
+      setSelectedContact(newContact)
+      setCurrentView('chat')
+      setIsChatOpen(true)
+    }
+
     if (isChatOpen) {
       document.addEventListener('mousedown', handleClickOutside)
     }
     
+    // Listen for chat open events from QuoteModal
+    window.addEventListener('openChat', handleOpenChat as EventListener)
+    
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
+      window.removeEventListener('openChat', handleOpenChat as EventListener)
     }
   }, [isChatOpen])
 
@@ -42,7 +63,6 @@ export default function ChatWidget() {
         className="fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full bg-emerald-400/15 hover:bg-emerald-400/20 border border-emerald-400/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center group"
       >
         <MessageCircle className="h-6 w-6 text-emerald-300 group-hover:scale-110 transition-transform" />
-        <span className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 rounded-full bg-cyan-400 text-[10px] font-medium text-black flex items-center justify-center">3</span>
       </button>
 
       {/* Chat Widget */}
@@ -88,137 +108,39 @@ export default function ChatWidget() {
             {currentView === 'history' ? (
               /* Conversations History */
               <div className="p-4 space-y-3">
-                {/* Conversation 1 - Most Recent */}
-                <div 
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setSelectedContact({id: 'mt', name: 'Mihai Transport SRL', avatar: 'MT', color: 'bg-emerald-400/15 border-emerald-400/30 text-emerald-300'})
-                    setCurrentView('chat')
-                  }}
-                  className="p-3 border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 transition cursor-pointer"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-full bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center text-sm text-emerald-300 font-medium flex-shrink-0">
-                      MT
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start mb-1">
-                        <div className="font-medium text-white text-sm">Mihai Transport SRL</div>
-                        <div className="text-xs text-white/50">2h</div>
-                      </div>
-                      <div className="text-sm text-white/70 truncate">Salut! Vă confirm că am preluat cargo-ul...</div>
-                      <div className="text-xs text-white/40 mt-1">Ultima activitate: Acum 2 ore</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Conversation 2 */}
-                <div 
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setSelectedContact({id: 'el', name: 'Elena Logistics', avatar: 'EL', color: 'bg-blue-400/15 border-blue-400/30 text-blue-300'})
-                    setCurrentView('chat')
-                  }}
-                  className="p-3 border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 transition cursor-pointer"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-full bg-blue-400/15 border border-blue-400/30 flex items-center justify-center text-sm text-blue-300 font-medium flex-shrink-0">
-                      EL
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start mb-1">
-                        <div className="font-medium text-white text-sm">Elena Logistics</div>
-                        <div className="text-xs text-white/50">ieri</div>
-                      </div>
-                      <div className="text-sm text-white/70 truncate">Mulțumesc pentru colaborare! Cargo livrat...</div>
-                      <div className="text-xs text-white/40 mt-1">Ultima activitate: Ieri la 16:30</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Conversation 3 */}
-                <div 
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setSelectedContact({id: 'dt', name: 'Dan Transport', avatar: 'DT', color: 'bg-purple-400/15 border-purple-400/30 text-purple-300'})
-                    setCurrentView('chat')
-                  }}
-                  className="p-3 border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 transition cursor-pointer"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-full bg-purple-400/15 border border-purple-400/30 flex items-center justify-center text-sm text-purple-300 font-medium flex-shrink-0">
-                      DT
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start mb-1">
-                        <div className="font-medium text-white text-sm">Dan Transport</div>
-                        <div className="text-xs text-white/50">3 zile</div>
-                      </div>
-                      <div className="text-sm text-white/70 truncate">Pot să preiau cargo-ul pentru...</div>
-                      <div className="text-xs text-white/40 mt-1">Ultima activitate: 3 zile în urmă</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Conversation 4 */}
-                <div 
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setSelectedContact({id: 'at', name: 'Alexandru Transport', avatar: 'AT', color: 'bg-orange-400/15 border-orange-400/30 text-orange-300'})
-                    setCurrentView('chat')
-                  }}
-                  className="p-3 border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 transition cursor-pointer"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-full bg-orange-400/15 border border-orange-400/30 flex items-center justify-center text-sm text-orange-300 font-medium flex-shrink-0">
-                      AT
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start mb-1">
-                        <div className="font-medium text-white text-sm">Alexandru Transport</div>
-                        <div className="text-xs text-white/50">1 săpt</div>
-                      </div>
-                      <div className="text-sm text-white/70 truncate">Bună ziua! Am văzut cargo-ul pentru...</div>
-                      <div className="text-xs text-white/40 mt-1">Ultima activitate: 1 săptămână în urmă</div>
-                    </div>
+                <div className="flex items-center justify-center py-8">
+                  <div className="text-center">
+                    <div className="text-white/40 text-sm mb-2">Nu există conversații</div>
+                    <div className="text-white/30 text-xs">Conversațiile vor apărea aici după trimiterea ofertelor</div>
                   </div>
                 </div>
               </div>
             ) : (
               /* Individual Chat */
               <div className="p-3 space-y-3">
-                {/* Contact's message */}
-                <div className="flex gap-2">
-                  <div className={`h-6 w-6 rounded-full ${selectedContact?.color || 'bg-emerald-500'} flex items-center justify-center text-xs text-white font-medium flex-shrink-0`}>
-                    {selectedContact?.avatar || 'AS'}
+                {/* Quote Message - Special */}
+                {selectedContact?.id?.startsWith('cmf') && (
+                  <div className="flex gap-2 justify-end">
+                    <div className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white rounded-lg px-3 py-2 max-w-[80%] border border-emerald-400/30">
+                      <div className="text-sm font-medium">📋 Ofertă trimisă!</div>
+                      <div className="text-sm mt-1">Am trimis o ofertă pentru acest cargo.</div>
+                      <div className="text-xs text-emerald-100 mt-2">Acum {Math.floor(Math.random() * 10) + 1} min</div>
+                    </div>
+                    <div className="h-6 w-6 rounded-full bg-blue-500 flex items-center justify-center text-xs text-white font-medium flex-shrink-0">
+                      EU
+                    </div>
                   </div>
-                  <div className="bg-white/10 rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-white/10">
-                    <div className="text-sm text-white">Bună ziua! Cu ce vă pot ajuta astăzi?</div>
-                    <div className="text-xs text-white/50 mt-1">10:30</div>
+                )}
+                
+                {/* Empty chat state */}
+                {!selectedContact?.id?.startsWith('cmf') && (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="text-center">
+                      <div className="text-white/40 text-sm mb-2">Chat gol</div>
+                      <div className="text-white/30 text-xs">Conversația va începe aici</div>
+                    </div>
                   </div>
-                </div>
-
-                {/* My message */}
-                <div className="flex gap-2 justify-end">
-                  <div className="bg-emerald-500 text-white rounded-lg px-3 py-2 max-w-[80%]">
-                    <div className="text-sm">Am o întrebare despre procesul de transport</div>
-                    <div className="text-xs text-emerald-100 mt-1">10:32</div>
-                  </div>
-                  <div className="h-6 w-6 rounded-full bg-blue-500 flex items-center justify-center text-xs text-white font-medium flex-shrink-0">
-                    EU
-                  </div>
-                </div>
-
-                {/* Contact's response */}
-                <div className="flex gap-2">
-                  <div className={`h-6 w-6 rounded-full ${selectedContact?.color || 'bg-emerald-500'} flex items-center justify-center text-xs text-white font-medium flex-shrink-0`}>
-                    {selectedContact?.avatar || 'AS'}
-                  </div>
-                  <div className="bg-white/10 rounded-lg px-3 py-2 max-w-[80%] shadow-sm border border-white/10">
-                    <div className="text-sm text-white">Desigur! Vă pot explica tot procesul. Despre ce anume doriți să aflați?</div>
-                    <div className="text-xs text-white/50 mt-1">10:33</div>
-                  </div>
-                </div>
+                )}
               </div>
             )}
           </div>

@@ -36,11 +36,7 @@ export async function GET(request: NextRequest) {
     // Build filter conditions
     const whereClause: any = {
       status: 'Active',
-      isPublic: true,
-      // Exclude current user's cargo
-      NOT: {
-        userId: userId
-      }
+      isPublic: true
     };
 
     // Apply filters
@@ -116,6 +112,7 @@ export async function GET(request: NextRequest) {
     // Format response
     const formattedCargos = cargos.map(cargo => ({
       id: cargo.id,
+      userId: cargo.userId,
       title: cargo.title,
       description: cargo.description,
       

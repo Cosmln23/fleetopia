@@ -166,12 +166,12 @@ export async function POST(
 
     console.log('📝 POST Quote: Cargo found:', cargo)
 
-    // DEBUG: Allow self-quotes for testing (commented out the restriction)
-    // if (cargo.userId === userId) {
-    //   return NextResponse.json({ 
-    //     error: 'Cannot quote on your own cargo' 
-    //   }, { status: 400 })
-    // }
+    if (cargo.userId === userId) {
+      console.log('📝 POST Quote: Cannot quote own cargo')
+      return NextResponse.json({ 
+        error: 'Cannot quote on your own cargo' 
+      }, { status: 400 })
+    }
 
     if (cargo.status !== 'Active') {
       console.log('📝 POST Quote: Cargo not active')

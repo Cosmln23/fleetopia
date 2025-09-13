@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Euro, MessageCircle, CheckCircle } from 'lucide-react'
+import { X, Euro, MessageCircle, CheckCircle, MessageSquare } from 'lucide-react'
 
 interface CargoData {
   id: string
@@ -29,6 +29,7 @@ interface QuoteModalProps {
 
 export default function QuoteModal({ isOpen, onClose, cargo, onQuoteSubmitted }: QuoteModalProps) {
   const [price, setPrice] = useState('')
+  const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -44,7 +45,8 @@ export default function QuoteModal({ isOpen, onClose, cargo, onQuoteSubmitted }:
     try {
       const payload = {
         totalPrice: parseFloat(price),
-        vehicleType: 'Prelată' // Default
+        vehicleType: 'Prelată', // Default
+        notes: message || undefined
       }
 
       const response = await fetch(`/api/cargo/${cargo.id}/quote`, {
@@ -74,6 +76,7 @@ export default function QuoteModal({ isOpen, onClose, cargo, onQuoteSubmitted }:
 
   const handleClose = () => {
     setPrice('')
+    setMessage('')
     setError('')
     setSuccess(false)
     setQuoteId('')
@@ -81,8 +84,13 @@ export default function QuoteModal({ isOpen, onClose, cargo, onQuoteSubmitted }:
   }
 
   const handleChat = () => {
-    // TODO: Open chat with cargo owner
-    alert('Chat functionality coming soon!')
+    // TODO: Trigger chat opening in ChatWidget
+    // For now, close modal and let user use ChatWidget
+    handleClose()
+    // Trigger a custom event to open ChatWidget
+    window.dispatchEvent(new CustomEvent('openChat', { 
+      detail: { cargoId: cargo.id, cargoTitle: cargo.title }
+    }))
   }
 
   return (
@@ -139,6 +147,19 @@ export default function QuoteModal({ isOpen, onClose, cargo, onQuoteSubmitted }:
                       onChange={(e) => setPrice(e.target.value)}
                       className="w-full h-12 px-4 rounded-lg bg-white/[0.06] border border-white/10 placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-emerald-400/40 text-lg text-center"
                       placeholder="500.00"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-white/70 mb-2 flex items-center gap-2">
+                      <MessageSquare className="h-4 w-4" />
+                      Mesaj (opțional)
+                    </label>
+                    <textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      className="w-full h-20 px-4 py-3 rounded-lg bg-white/[0.06] border border-white/10 placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-emerald-400/40 text-sm resize-none"
+                      placeholder="Detalii suplimentare despre oferta ta..."
                     />
                   </div>
 

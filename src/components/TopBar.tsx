@@ -91,7 +91,6 @@ export default function TopBar() {
               >
                 <Bell className="h-4 w-4" />
                 <span className="hidden lg:inline">Notificări</span>
-                <span className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 rounded-full bg-cyan-400 text-[10px] font-medium text-black flex items-center justify-center">4</span>
               </button>
 
               {/* Notifications Dropdown */}
@@ -108,68 +107,10 @@ export default function TopBar() {
                     </div>
                   </div>
                   <div className="max-h-80 overflow-y-auto bg-black/60">
-                    {/* Notification 1 */}
-                    <div className="p-3 hover:bg-white/5 border-b border-white/10 cursor-pointer">
-                      <div className="flex gap-3">
-                        <div className="h-10 w-10 rounded-full bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center flex-shrink-0">
-                          <Truck className="h-4 w-4 text-emerald-300" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex justify-between items-start">
-                            <div className="font-medium text-sm text-white">Ofertă nouă</div>
-                            <div className="text-xs text-white/50">30 min</div>
-                          </div>
-                          <div className="text-sm text-white/70">Alexandru Transport a trimis o ofertă pentru cargo-ul București-Cluj</div>
-                          <div className="h-2 w-2 rounded-full bg-cyan-400 mt-1"></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Notification 2 */}
-                    <div className="p-3 hover:bg-white/5 border-b border-white/10 cursor-pointer">
-                      <div className="flex gap-3">
-                        <div className="h-10 w-10 rounded-full bg-green-400/15 border border-green-400/30 flex items-center justify-center flex-shrink-0">
-                          <CheckCircle className="h-4 w-4 text-green-300" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex justify-between items-start">
-                            <div className="font-medium text-sm text-white">Cargo livrat</div>
-                            <div className="text-xs text-white/50">2h</div>
-                          </div>
-                          <div className="text-sm text-white/70">Cargo-ul #CG-7420 a fost livrat cu succes în Cluj-Napoca</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Notification 3 */}
-                    <div className="p-3 hover:bg-white/5 border-b border-white/10 cursor-pointer">
-                      <div className="flex gap-3">
-                        <div className="h-10 w-10 rounded-full bg-blue-400/15 border border-blue-400/30 flex items-center justify-center flex-shrink-0">
-                          <DollarSign className="h-4 w-4 text-blue-300" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex justify-between items-start">
-                            <div className="font-medium text-sm text-white">Plată primită</div>
-                            <div className="text-xs text-white/50">1 zi</div>
-                          </div>
-                          <div className="text-sm text-white/70">Ați primit €520 pentru transportul București-Cluj</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Notification 4 */}
-                    <div className="p-3 hover:bg-white/5 cursor-pointer">
-                      <div className="flex gap-3">
-                        <div className="h-10 w-10 rounded-full bg-orange-400/15 border border-orange-400/30 flex items-center justify-center flex-shrink-0">
-                          <AlertTriangle className="h-4 w-4 text-orange-300" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex justify-between items-start">
-                            <div className="font-medium text-sm text-white">Întârziere</div>
-                            <div className="text-xs text-white/50">2 zile</div>
-                          </div>
-                          <div className="text-sm text-white/70">Cargo-ul #CG-7421 întârzie cu 30 min</div>
-                        </div>
+                    <div className="flex items-center justify-center py-8">
+                      <div className="text-center">
+                        <div className="text-white/40 text-sm mb-2">Nu există notificări</div>
+                        <div className="text-white/30 text-xs">Notificările vor apărea aici</div>
                       </div>
                     </div>
                   </div>

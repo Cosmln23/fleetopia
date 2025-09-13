@@ -78,6 +78,7 @@ export async function GET(request: NextRequest) {
     // Format response
     const formattedCargos = cargos.map(cargo => ({
       id: cargo.id,
+      userId: cargo.userId,
       title: cargo.title,
       description: cargo.description,
       
