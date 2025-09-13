@@ -60,17 +60,17 @@ const createCargoSchema = z.object({
 
   // Cargo specifications  
   weight: z.preprocess(
-    (val) => {
+    (val: unknown) => {
       if (val === '' || val === null || val === undefined) return undefined;
-      const num = typeof val === 'string' ? parseFloat(val) : val;
+      const num = typeof val === 'string' ? parseFloat(val) : Number(val);
       return isNaN(num) ? undefined : num;
     },
     z.number().positive('Greutatea trebuie să fie pozitivă').optional()
   ),
   volume: z.preprocess(
-    (val) => {
+    (val: unknown) => {
       if (val === '' || val === null || val === undefined) return undefined;
-      const num = typeof val === 'string' ? parseFloat(val) : val;
+      const num = typeof val === 'string' ? parseFloat(val) : Number(val);
       return isNaN(num) ? undefined : num;
     },
     z.number().positive('Volumul trebuie să fie pozitiv').optional()
@@ -82,9 +82,9 @@ const createCargoSchema = z.object({
 
   // Pricing
   price: z.preprocess(
-    (val) => {
+    (val: unknown) => {
       if (val === '' || val === null || val === undefined) return undefined;
-      const num = typeof val === 'string' ? parseFloat(val) : val;
+      const num = typeof val === 'string' ? parseFloat(val) : Number(val);
       return isNaN(num) ? undefined : num;
     },
     z.number().positive('Prețul trebuie să fie pozitiv').optional()
