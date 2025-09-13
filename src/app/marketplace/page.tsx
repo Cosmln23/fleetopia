@@ -9,6 +9,7 @@ import SearchBar from '@/components/SearchBar';
 import CargoFilters from '@/components/CargoFilters';
 import CargoCard from '@/components/CargoCard';
 import PostCargoModal from '@/components/PostCargoModal';
+import QuoteModal from '@/components/QuoteModal';
 import Link from 'next/link';
 import { SlidersHorizontal, MapPin, Eye, CheckCircle, Clock3, FileDown, Shield, Calendar, Truck, MessageCircle, Heart, X, Loader2, Package, User, Scale } from 'lucide-react';
 
@@ -17,6 +18,7 @@ export default function MarketplacePage() {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isAddCargoOpen, setIsAddCargoOpen] = useState(false);
   const [selectedCargo, setSelectedCargo] = useState<any>(null);
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   
   // New state for components
@@ -533,7 +535,10 @@ export default function MarketplacePage() {
               {/* Action Buttons */}
               <div className="p-4 border-t border-white/10 bg-black/20">
                 <div className="grid grid-cols-2 gap-3">
-                  <button className="h-10 px-4 rounded-lg border border-emerald-400/30 bg-emerald-400/15 hover:bg-emerald-400/20 text-emerald-300 transition text-sm font-medium">
+                  <button 
+                    onClick={() => setIsQuoteModalOpen(true)}
+                    className="h-10 px-4 rounded-lg border border-emerald-400/30 bg-emerald-400/15 hover:bg-emerald-400/20 text-emerald-300 transition text-sm font-medium"
+                  >
                     Trimite Ofertă
                   </button>
                   <button className="h-10 px-4 rounded-lg border border-cyan-400/30 bg-cyan-400/15 hover:bg-cyan-400/20 text-cyan-200 transition text-sm flex items-center justify-center gap-2">
@@ -545,6 +550,19 @@ export default function MarketplacePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Quote Modal */}
+      {selectedCargo && (
+        <QuoteModal
+          isOpen={isQuoteModalOpen}
+          onClose={() => setIsQuoteModalOpen(false)}
+          cargo={selectedCargo}
+          onQuoteSubmitted={() => {
+            setIsQuoteModalOpen(false);
+            // TODO: Refresh quotes if needed
+          }}
+        />
       )}
 
       {/* Footer */}
