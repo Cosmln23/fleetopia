@@ -39,3 +39,6 @@ Thumbs.db
 
 # Windows reserved filename
 /nul
+
+# Broken node_modules
+node_modules.broken/
