@@ -48,6 +48,7 @@ model Cargo {
   pickupAddress   String
   pickupCity      String
   pickupCountry   String
+  pickupPostalCode String?
   pickupDate      DateTime
   pickupTimeStart String?
   pickupTimeEnd   String?
@@ -56,6 +57,7 @@ model Cargo {
   deliveryAddress String
   deliveryCity    String
   deliveryCountry String
+  deliveryPostalCode String?
   deliveryDate    DateTime
   deliveryTimeStart String?
   deliveryTimeEnd String?
@@ -64,6 +66,7 @@ model Cargo {
   weight          Float?   // kg
   volume          Float?   // m³
   cargoType       String   // General, Fragile, Hazardous, Refrigerated
+  vehicleType     String?  // Prelată, Container, etc
   packaging       String?  // Pallets, Boxes, Loose, etc
   specialRequirements String?
   

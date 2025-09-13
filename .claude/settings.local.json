@@ -8,7 +8,18 @@
       "Bash(npx prisma init:*)",
       "Bash(npm run prisma:push:*)",
       "Bash(if exist \".next\\static\" rmdir /s /q \".next\\static\")",
-      "Bash(if exist \".next\\server\" rmdir /s /q \".next\\server\")"
+      "Bash(if exist \".next\\server\" rmdir /s /q \".next\\server\")",
+      "Bash(npm run dev:*)",
+      "Bash(npx storybook@latest init:*)",
+      "Bash(npm run test:a11y:*)",
+      "Bash(npm run storybook:*)",
+      "Bash(npm i:*)",
+      "Bash(npm view:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(curl:*)",
+      "Bash(npx next build:*)",
+      "Bash(./node_modules/.bin/prisma:*)"
     ],
     "deny": [],
     "ask": []

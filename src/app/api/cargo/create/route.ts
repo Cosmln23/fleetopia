@@ -16,6 +16,7 @@ const createCargoSchema = z.object({
   pickupAddress: z.string().min(5, 'Pickup address is required'),
   pickupCity: z.string().min(2, 'Pickup city is required'),
   pickupCountry: z.string().min(2, 'Pickup country is required'),
+  pickupPostalCode: z.string().optional(),
   pickupDate: z.string().refine((date) => {
     const pickupDate = new Date(date);
     const today = new Date();
@@ -29,6 +30,7 @@ const createCargoSchema = z.object({
   deliveryAddress: z.string().min(5, 'Delivery address is required'),
   deliveryCity: z.string().min(2, 'Delivery city is required'),
   deliveryCountry: z.string().min(2, 'Delivery country is required'),
+  deliveryPostalCode: z.string().optional(),
   deliveryDate: z.string().refine((date) => {
     const deliveryDate = new Date(date);
     const today = new Date();
@@ -44,6 +46,7 @@ const createCargoSchema = z.object({
   cargoType: z.enum(['General', 'Fragile', 'Hazardous', 'Refrigerated'], {
     errorMap: () => ({ message: 'Invalid cargo type' })
   }),
+  vehicleType: z.string().optional(),
   packaging: z.string().optional(),
   specialRequirements: z.string().optional(),
 
@@ -51,6 +54,7 @@ const createCargoSchema = z.object({
   estimatedValue: z.number().positive('Estimated value must be positive').optional(),
   budgetMin: z.number().positive('Minimum budget must be positive').optional(),
   budgetMax: z.number().positive('Maximum budget must be positive').optional(),
+  price: z.number().positive('Price must be positive').optional(),
 
   // Options
   isUrgent: z.boolean().default(false),
@@ -112,9 +116,9 @@ export async function POST(request: NextRequest) {
           {
             success: false,
             error: 'Validation failed',
-            details: error.errors.map(err => ({
-              field: err.path.join('.'),
-              message: err.message
+            details: (error.errors || []).map(err => ({
+              field: err.path?.join('.') || 'unknown',
+              message: err.message || 'Validation error'
             }))
           },
           { status: 400 }
@@ -172,6 +176,7 @@ export async function POST(request: NextRequest) {
         pickupAddress: validatedData.pickupAddress,
         pickupCity: validatedData.pickupCity,
         pickupCountry: validatedData.pickupCountry,
+        pickupPostalCode: validatedData.pickupPostalCode,
         pickupDate: new Date(validatedData.pickupDate),
         pickupTimeStart: validatedData.pickupTimeStart,
         pickupTimeEnd: validatedData.pickupTimeEnd,
@@ -180,6 +185,7 @@ export async function POST(request: NextRequest) {
         deliveryAddress: validatedData.deliveryAddress,
         deliveryCity: validatedData.deliveryCity,
         deliveryCountry: validatedData.deliveryCountry,
+        deliveryPostalCode: validatedData.deliveryPostalCode,
         deliveryDate: new Date(validatedData.deliveryDate),
         deliveryTimeStart: validatedData.deliveryTimeStart,
         deliveryTimeEnd: validatedData.deliveryTimeEnd,
@@ -188,13 +194,14 @@ export async function POST(request: NextRequest) {
         weight: validatedData.weight,
         volume: validatedData.volume,
         cargoType: validatedData.cargoType,
+        vehicleType: validatedData.vehicleType,
         packaging: validatedData.packaging,
         specialRequirements: validatedData.specialRequirements,
         
-        // Pricing
-        estimatedValue: validatedData.estimatedValue,
+        // Pricing - use price if provided, otherwise use estimatedValue/budget fields
+        estimatedValue: validatedData.price || validatedData.estimatedValue,
         budgetMin: validatedData.budgetMin,
-        budgetMax: validatedData.budgetMax,
+        budgetMax: validatedData.price || validatedData.budgetMax,
         
         // Status
         status: 'Active',
@@ -283,8 +290,22 @@ export async function POST(request: NextRequest) {
       headers: rateLimitResult.headers 
     });
 
-  } catch (error) {
-    console.error('Error in /api/cargo/create:', error);
+  } catch (error: any) {
+    // LOG pe server
+    console.error('[cargo/create] failed', {
+      message: error?.message,
+      code: error?.code,          // Prisma P2002/P2003 etc
+      meta: error?.meta,
+      stack: error?.stack,
+    });
+
+    // ÎN DEV, trimite și detalii ca să vezi rapid cauza în Network tab
+    if (process.env.NODE_ENV === 'development') {
+      return NextResponse.json(
+        { success: false, error: error?.message, code: error?.code, meta: error?.meta },
+        { status: 500 }
+      );
+    }
     
     // Handle specific Prisma errors
     if (error instanceof Error) {

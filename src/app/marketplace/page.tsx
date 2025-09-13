@@ -1,16 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
 import TopBar from '@/components/TopBar';
 import CursorSpotlight from '@/components/CursorSpotlight';
 import TabNavigation from '@/components/TabNavigation';
 import SearchBar from '@/components/SearchBar';
 import CargoFilters from '@/components/CargoFilters';
 import CargoCard from '@/components/CargoCard';
+import PostCargoModal from '@/components/PostCargoModal';
 import Link from 'next/link';
-import { SlidersHorizontal, MapPin, Eye, CheckCircle, Clock3, FileDown, Shield, Calendar, Truck, MessageCircle, Heart, X } from 'lucide-react';
+import { SlidersHorizontal, MapPin, Eye, CheckCircle, Clock3, FileDown, Shield, Calendar, Truck, MessageCircle, Heart, X, Loader2, Package, User, Scale } from 'lucide-react';
 
 export default function MarketplacePage() {
+  const { user, isLoaded } = useUser();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isAddCargoOpen, setIsAddCargoOpen] = useState(false);
   const [selectedCargo, setSelectedCargo] = useState<any>(null);
@@ -20,58 +23,68 @@ export default function MarketplacePage() {
   const [activeTab, setActiveTab] = useState('all-offers');
   const [searchValue, setSearchValue] = useState('');
   const [filters, setFilters] = useState({});
+  
+  // Real data state
+  const [cargos, setCargos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  // Mock data pentru cargo cards
-  const mockCargos = [
-    {
-      id: 1,
-      title: 'Produse textile pentru export',
-      route: 'RO, București, 100001 → RO, Cluj-Napoca, 400001',
-      type: 'General',
-      weight: '1200 kg',
-      volume: '15.5 m³',
-      price: '€520',
-      poster: 'Alexandru Transport SRL',
-      verified: true,
-      urgency: 'Medium',
-      loadingDate: '2025-01-15',
-      deliveryDate: '2025-01-17',
-      distance: '432 km',
-      estimatedTime: '5h 45m'
-    },
-    {
-      id: 2,
-      title: 'Produse alimentare refrigerate',
-      route: 'RO, Timișoara, 300001 → RO, Oradea, 410001',
-      type: 'Refrigerat',
-      weight: '450 kg',
-      volume: '8.2 m³',
-      price: '€210',
-      poster: 'Fresh Food Express',
-      verified: false,
-      urgency: 'High',
-      loadingDate: '2025-01-12',
-      deliveryDate: '2025-01-13',
-      distance: '156 km',
-      estimatedTime: '2h 30m'
-    },
-    {
-      id: 3,
-      title: 'Echipamente industriale',
-      route: 'RO, Iași, 700001 → RO, Brașov, 500001',
-      type: 'Oversized',
-      weight: '800 kg',
-      volume: '22.1 m³',
-      price: '€430',
-      poster: 'Industrial Logistics Co',
-      verified: true,
-      urgency: 'Low',
-      loadingDate: '2025-01-20',
-      deliveryDate: '2025-01-22',
-      distance: '298 km',
-      estimatedTime: '4h 15m'
+  // Fetch cargo data based on active tab
+  const fetchCargos = async () => {
+    if (!isLoaded) return;
+    
+    setLoading(true);
+    setError('');
+    
+    try {
+      const endpoint = activeTab === 'my-cargo' 
+        ? '/api/marketplace/my-cargo' 
+        : '/api/marketplace/all-offers';
+      
+      const response = await fetch(endpoint);
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to fetch cargo data');
+      }
+      
+      // Transform API data to match CargoCard interface
+      const transformedCargos = (result.data?.cargos || []).map((cargo: any) => ({
+        id: cargo.id,
+        title: cargo.title,
+        route: `${cargo.pickup.country}, ${cargo.pickup.city} → ${cargo.delivery.country}, ${cargo.delivery.city}`,
+        type: cargo.cargoType,
+        weight: cargo.weight ? `${cargo.weight} kg` : '',
+        volume: cargo.volume ? `${cargo.volume} m³` : '',
+        price: cargo.estimatedValue ? `€${cargo.estimatedValue}` : '',
+        poster: cargo.poster?.id ? 'Verified User' : 'Anonymous User',
+        verified: true,
+        urgency: cargo.isUrgent ? 'High' : 'Medium',
+        loadingDate: new Date(cargo.pickup.date).toISOString().split('T')[0],
+        deliveryDate: new Date(cargo.delivery.date).toISOString().split('T')[0],
+        distance: '-- km',
+        estimatedTime: '--'
+      }));
+      
+      setCargos(transformedCargos);
+    } catch (err) {
+      console.error('Error fetching cargos:', err);
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      setCargos([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+  
+  // Refresh cargo list
+  const refreshCargos = () => {
+    fetchCargos();
+  };
+
+  // Fetch cargos when component mounts or tab changes
+  useEffect(() => {
+    fetchCargos();
+  }, [activeTab, isLoaded]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -137,16 +150,62 @@ export default function MarketplacePage() {
         </div>
 
         {/* Offers grid */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {mockCargos.map((cargo) => (
-            <CargoCard key={cargo.id} cargo={cargo} onClick={setSelectedCargo} />
-          ))}
+        <div className="mt-8">
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+              <span className="ml-2 text-white/60">Loading cargo...</span>
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <p className="text-red-400 mb-2">Error: {error}</p>
+                <button 
+                  onClick={refreshCargos}
+                  className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white/80 transition"
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
+          ) : cargos.length === 0 ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <p className="text-white/60 mb-2">
+                  {activeTab === 'my-cargo' ? 'No cargo posts found.' : 'No offers available.'}
+                </p>
+                {activeTab === 'my-cargo' && (
+                  <button 
+                    onClick={() => setIsAddCargoOpen(true)}
+                    className="px-4 py-2 bg-cyan-400 hover:bg-cyan-300 text-black rounded-lg transition"
+                  >
+                    Post Your First Cargo
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {cargos.map((cargo) => (
+                <CargoCard key={cargo.id} cargo={cargo} onClick={setSelectedCargo} />
+              ))}
+            </div>
+          )}
         </div>
       </main>
 
 
-      {/* Add Cargo Modal */}
-      {isAddCargoOpen && (
+      {/* PostCargoModal */}
+      <PostCargoModal 
+        isOpen={isAddCargoOpen} 
+        onClose={() => {
+          setIsAddCargoOpen(false);
+          refreshCargos(); // Refresh list after modal closes
+        }} 
+      />
+
+      {/* Legacy mock modal - remove later */}
+      {false && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => { setIsAddCargoOpen(false); }} />
           <div className="relative max-w-2xl w-full">
@@ -391,33 +450,65 @@ export default function MarketplacePage() {
                 </div>
               </div>
               
-              {/* Code Lines */}
-              <div className="flex divide-x divide-white/10">
-                <div className="bg-black/50 text-white/40 py-3 px-2 text-right select-none w-10 text-xs leading-6">
-                  <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div><div>11</div><div>12</div>
+              {/* Cargo Details - Normal Style */}
+              <div className="py-6 px-6 bg-black/30 space-y-6">
+                {/* Title */}
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-white mb-2 flex items-center justify-center gap-2">
+                    <Package className="h-6 w-6" />
+                    {selectedCargo.title}
+                  </h2>
                 </div>
-                <div className="py-3 px-4 overflow-auto w-full bg-black/30 text-left text-sm leading-6">
-                  <pre className="whitespace-pre text-white/90">
-{`{
-  "titlu": `}<span className="font-bold">{selectedCargo.title}</span>{`,
-  "ridicare": "`}<span className="font-bold">{selectedCargo.route.split(' → ')[0]}</span>{`",
-  "livrare": "`}<span className="font-bold">{selectedCargo.route.split(' → ')[1]}</span>{`",
-  "greutateKg": `}<span className="font-bold">{selectedCargo.weight.replace(' kg', '')}</span>{`,
-  "dataRidicare": "`}<span className="font-bold">{selectedCargo.loadingDate}</span>{`",
-  "dataLivrare": "`}<span className="font-bold">{selectedCargo.deliveryDate}</span>{`",
-  "tipVehicul": "`}<span className="font-bold">{selectedCargo.type}</span>{`",
-  "pretEUR": `}<span className="font-bold">{selectedCargo.price.replace('€', '')}</span>{`,
-  "poster": "`}<span className="font-bold">{selectedCargo.poster}</span>{`",
-  "verificat": `}<span className="font-bold">{selectedCargo.verified}</span>{`,
-  "distanta": "`}<span className="font-bold">{selectedCargo.distance}</span>{`", `}<a 
-                      href={`https://www.google.com/maps/dir/${encodeURIComponent(selectedCargo.route.split(' → ')[0])}/${encodeURIComponent(selectedCargo.route.split(' → ')[1])}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-cyan-400 hover:text-cyan-300 underline cursor-pointer"
-                    >vezi link</a>{`
-  "timpEstimat": "`}<span className="font-bold">{selectedCargo.estimatedTime}</span>{`"
-}`}
-                  </pre>
+
+                {/* Transport Details */}
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                    <Truck className="h-5 w-5" />
+                    Detalii Transport
+                  </h3>
+                  <div className="space-y-2 text-white/80">
+                    <div><span className="text-white/60">Ridicare:</span> <span className="font-medium">{selectedCargo.route.split(' → ')[0]}</span></div>
+                    <div><span className="text-white/60">Data ridicare:</span> <span className="font-medium">{selectedCargo.loadingDate}</span></div>
+                    <div><span className="text-white/60">Livrare:</span> <span className="font-medium">{selectedCargo.route.split(' → ')[1]}</span></div>
+                    <div><span className="text-white/60">Data livrare:</span> <span className="font-medium">{selectedCargo.deliveryDate}</span></div>
+                  </div>
+                </div>
+
+                {/* Cargo Specifications */}
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                    <Scale className="h-5 w-5" />
+                    Specificații Marfă
+                  </h3>
+                  <div className="space-y-2 text-white/80">
+                    {selectedCargo.weight && <div><span className="text-white/60">Greutate:</span> <span className="font-medium">{selectedCargo.weight}</span></div>}
+                    <div><span className="text-white/60">Tip vehicul:</span> <span className="font-medium">{selectedCargo.type}</span></div>
+                    {selectedCargo.price && <div><span className="text-white/60">Preț:</span> <span className="font-medium text-emerald-400">{selectedCargo.price}</span></div>}
+                  </div>
+                </div>
+
+                {/* Additional Info */}
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                    <User className="h-5 w-5" />
+                    Informații Suplimentare
+                  </h3>
+                  <div className="space-y-2 text-white/80">
+                    <div><span className="text-white/60">Postat de:</span> <span className="font-medium">{selectedCargo.poster}</span> {selectedCargo.verified && <span className="text-emerald-400">✓</span>}</div>
+                    <div>
+                      <span className="text-white/60">Distanță:</span> 
+                      <span className="font-medium">{selectedCargo.distance}</span>
+                      <a 
+                        href={`https://www.google.com/maps/dir/${encodeURIComponent(selectedCargo.route.split(' → ')[0])}/${encodeURIComponent(selectedCargo.route.split(' → ')[1])}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-cyan-400 hover:text-cyan-300 underline cursor-pointer ml-2"
+                      >
+                        vezi link
+                      </a>
+                    </div>
+                    <div><span className="text-white/60">Timp estimat:</span> <span className="font-medium">{selectedCargo.estimatedTime}</span></div>
+                  </div>
                 </div>
               </div>
               
